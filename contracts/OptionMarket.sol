@@ -20,15 +20,6 @@ import "./SynthetixAdapter.sol";
 import "./ShortCollateral.sol";
 import "./OptionMarketPricer.sol";
 
-/**
- * @title OptionMarket
- * @author Lyra
- * @dev An AMM which allows users to trade options. Supports both buying and selling options. Also handles liquidating
- * short positions.
- */
-contract OptionMarket is Owned, SimpleInitializeable, ReentrancyGuard {
-  using DecimalMath for uint;
-
   enum TradeDirection {
     OPEN,
     CLOSE,
@@ -50,6 +41,15 @@ contract OptionMarket is Owned, SimpleInitializeable, ReentrancyGuard {
     STRIKE_PRICE,
     ITERATIONS
   }
+  
+/**
+ * @title OptionMarket
+ * @author Lyra
+ * @dev An AMM which allows users to trade options. Supports both buying and selling options. Also handles liquidating
+ * short positions.
+ */
+contract OptionMarket is Owned, SimpleInitializeable, ReentrancyGuard {
+  using DecimalMath for uint;
 
   ///////////////////
   // Internal Data //

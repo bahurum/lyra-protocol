@@ -50,7 +50,7 @@ contract OptionMarketWrapper is OptionMarketWrapperWithSwaps {
       iterations: _parseUint8(params >> 24),
       currentCollateral: 0,
       setCollateralTo: 0,
-      optionType: uint8(params >> 16) > 0 ? OptionMarket.OptionType.LONG_CALL : OptionMarket.OptionType.LONG_PUT,
+      optionType: uint8(params >> 16) > 0 ? OptionType.LONG_CALL : OptionType.LONG_PUT,
       amount: _parseUint64Amount(params >> 128),
       minCost: 0,
       maxCost: _parseUint32Amount(params >> 64),
@@ -171,7 +171,7 @@ contract OptionMarketWrapper is OptionMarketWrapperWithSwaps {
   struct OpenShortParams {
     uint8 market; // 8
     uint8 token; // 16
-    OptionMarket.OptionType optionType; // 24
+    OptionType optionType; // 24
     uint8 iterations; // 32
     uint32 strikeId; // 64
     uint32 minReceived; // 96
@@ -190,7 +190,7 @@ contract OptionMarketWrapper is OptionMarketWrapperWithSwaps {
       iterations: _parseUint8(params >> 24),
       currentCollateral: 0,
       setCollateralTo: _parseUint64Amount(params >> 192),
-      optionType: OptionMarket.OptionType(uint8(params >> 16)),
+      optionType: OptionType(uint8(params >> 16)),
       amount: _parseUint64Amount(params >> 128),
       minCost: _parseUint32Amount(params >> 64),
       maxCost: type(uint).max,
@@ -343,5 +343,5 @@ contract OptionMarketWrapper is OptionMarketWrapperWithSwaps {
   // Errors //
   ////////////
 
-  error OnlyShorts(address thrower, OptionMarket.OptionType optionType);
+  error OnlyShorts(address thrower, OptionType optionType);
 }

@@ -1,0 +1,868 @@
+slither . --filter-paths "interfaces|periphery|test-helpers|openzeppelin"
+'npx hardhat compile --force' running
+Compiling 82 files with 0.8.9
+Generating typings for: 84 artifacts in dir: typechain-types for target: ethers-v5
+Successfully generated 151 typings!
+Compilation finished successfully
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/periphery/VaultAdapter.sol:68:3:
+   |
+68 |   enum PositionState {
+   |   ^ (Relevant source part starts here and spans across multiple lines).
+Note: The shadowed declaration is here:
+  --> contracts/OptionToken.sol:19:3:
+   |
+19 |   enum PositionState {
+   |   ^ (Relevant source part starts here and spans across multiple lines).
+
+
+
+Missing function Variable not found: AssetTransferFailed(address,ERC20,address,address,uint256) (context OptionMarketWrapperWithSwaps)
+Missing function Variable not found: AssetTransferFailed(address,ERC20,address,address,uint256) (context OptionMarketWrapper)
+
+FixedPointMathLib.ln(int256) (contracts/lib/FixedPointMathLib.sol#19-77) contains an incorrect shift operation: p = p * x - (795164235651350426258249787498 << 96) (contracts/lib/FixedPointMathLib.sol#45)
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) contains an incorrect shift operation: p = p * x + (4385272521454847904632057985693276 << 96) (contracts/lib/FixedPointMathLib.sol#128)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#shift-parameter-mixup
+
+LiquidityPool.reclaimInsolventBase(SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#706-723) ignores return value by baseAsset.transfer(address(shortCollateral),amountBase) (contracts/LiquidityPool.sol#720)
+OptionMarket.smClaim() (contracts/OptionMarket.sol#363-377) ignores return value by quoteAsset.transfer(msg.sender,quoteBal) (contracts/OptionMarket.sol#369)
+OptionMarket.smClaim() (contracts/OptionMarket.sol#363-377) ignores return value by baseAsset.transfer(msg.sender,baseBal) (contracts/OptionMarket.sol#374)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unchecked-transfer
+
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) performs a multiplication on the result of a division:
+	-x = (x << 78) / 5 ** 18 (contracts/lib/FixedPointMathLib.sol#113)
+	-p = (p * x >> 96) + 44335888930127919016834873520032 (contracts/lib/FixedPointMathLib.sol#125)
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) performs a multiplication on the result of a division:
+	-x = (x << 78) / 5 ** 18 (contracts/lib/FixedPointMathLib.sol#113)
+	-p = (p * x >> 96) + 398888492587501845352592340339721 (contracts/lib/FixedPointMathLib.sol#126)
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) performs a multiplication on the result of a division:
+	-x = (x << 78) / 5 ** 18 (contracts/lib/FixedPointMathLib.sol#113)
+	-p = (p * x >> 96) + 1993839819670624470859228494792842 (contracts/lib/FixedPointMathLib.sol#127)
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) performs a multiplication on the result of a division:
+	-x = (x << 78) / 5 ** 18 (contracts/lib/FixedPointMathLib.sol#113)
+	-p = p * x + (4385272521454847904632057985693276 << 96) (contracts/lib/FixedPointMathLib.sol#128)
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) performs a multiplication on the result of a division:
+	-x = (x << 78) / 5 ** 18 (contracts/lib/FixedPointMathLib.sol#113)
+	-z = (z * x >> 96) + 32788456221302202726307501949080 (contracts/lib/FixedPointMathLib.sol#132)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#divide-before-multiply
+
+LiquidityPool._updateCBs(LiquidityPool.Liquidity,uint256,uint256,int256) (contracts/LiquidityPool.sol#465-506) uses a dangerous strict equality:
+	- liquidity.usedCollatLiquidity == 0 && optionValue == 0 (contracts/LiquidityPool.sol#472)
+LiquidityPool.processWithdrawalQueue(uint256) (contracts/LiquidityPool.sol#325-375) uses a dangerous strict equality:
+	- totalTokensBurnable == 0 (contracts/LiquidityPool.sol#335)
+OptionGreekCache.isBoardCacheStale(uint256) (contracts/OptionGreekCache.sol#948-956) uses a dangerous strict equality:
+	- boardCache.id == 0 (contracts/OptionGreekCache.sol#951)
+ShortCollateral._sendBaseCollateral(address,uint256) (contracts/ShortCollateral.sol#345-360) uses a dangerous strict equality:
+	- amount == 0 (contracts/ShortCollateral.sol#346)
+ShortCollateral._sendQuoteCollateral(address,uint256) (contracts/ShortCollateral.sol#328-343) uses a dangerous strict equality:
+	- amount == 0 (contracts/ShortCollateral.sol#329)
+GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256) (contracts/lib/GWAV.sol#113-126) uses a dangerous strict equality:
+	- t0 == t1 (contracts/lib/GWAV.sol#121)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+
+Reentrancy in PoolHedger.openShortAccount() (contracts/PoolHedger.sol#107-117):
+	External calls:
+	- (interestIndex) = exchangeParams.short.loans(shortId) (contracts/PoolHedger.sol#110)
+	- _openShortAccount(exchangeParams) (contracts/PoolHedger.sol#116)
+		- minCollateral = exchangeParams.short.minCollateral() (contracts/PoolHedger.sol#125)
+		- ! quoteAsset.transfer(address(liquidityPool),quoteBal) (contracts/PoolHedger.sol#453)
+		- quoteAsset.approve(address(exchangeParams.short),type()(uint256).max) (contracts/PoolHedger.sol#127)
+		- liquidityPool.transferQuoteToHedge(exchangeParams,minCollateral) (contracts/PoolHedger.sol#130)
+		- shortId = exchangeParams.short.open(minCollateral,0,exchangeParams.baseKey) (contracts/PoolHedger.sol#138)
+	State variables written after the call(s):
+	- _openShortAccount(exchangeParams) (contracts/PoolHedger.sol#116)
+		- shortId = exchangeParams.short.open(minCollateral,0,exchangeParams.baseKey) (contracts/PoolHedger.sol#138)
+Reentrancy in LiquidityPool.processDepositQueue(uint256) (contracts/LiquidityPool.sol#295-322):
+	External calls:
+	- liquidityTokens.mint(current.beneficiary,amountTokens) (contracts/LiquidityPool.sol#305)
+	State variables written after the call(s):
+	- queuedDepositHead ++ (contracts/LiquidityPool.sol#320)
+	- current.mintedTokens = amountTokens (contracts/LiquidityPool.sol#306)
+	- current.amountLiquidity = 0 (contracts/LiquidityPool.sol#318)
+	- totalQueuedDeposits -= current.amountLiquidity (contracts/LiquidityPool.sol#307)
+Reentrancy in LiquidityPool.processWithdrawalQueue(uint256) (contracts/LiquidityPool.sol#325-375):
+	External calls:
+	- _transferQuote(current.beneficiary,quoteAmount) (contracts/LiquidityPool.sol#349)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	State variables written after the call(s):
+	- queuedWithdrawalHead ++ (contracts/LiquidityPool.sol#373)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+
+LiquidityPool._getLiquidity(uint256,uint256,uint256,uint256,uint256).pendingBaseValue (contracts/LiquidityPool.sol#823) is a local variable never initialized
+OptionMarket._settleExpiredBoard(OptionMarket.OptionBoard).totalAMMShortCallProfitQuote (contracts/OptionMarket.sol#960) is a local variable never initialized
+LiquidityPool._getLiquidity(uint256,uint256,uint256,uint256,uint256).liquidity (contracts/LiquidityPool.sol#817) is a local variable never initialized
+OptionMarket._settleExpiredBoard(OptionMarket.OptionBoard).totalUserLongProfitQuote (contracts/OptionMarket.sol#956) is a local variable never initialized
+OptionMarket._settleExpiredBoard(OptionMarket.OptionBoard).totalAMMShortPutProfitQuote (contracts/OptionMarket.sol#961) is a local variable never initialized
+OptionMarket._settleExpiredBoard(OptionMarket.OptionBoard).totalAMMShortCallProfitBase (contracts/OptionMarket.sol#959) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+
+PoolHedger._openShortAccount(SynthetixAdapter.ExchangeParams) (contracts/PoolHedger.sol#124-142) ignores return value by quoteAsset.approve(address(exchangeParams.short),type()(uint256).max) (contracts/PoolHedger.sol#127)
+PoolHedger._openShortAccount(SynthetixAdapter.ExchangeParams) (contracts/PoolHedger.sol#124-142) ignores return value by liquidityPool.transferQuoteToHedge(exchangeParams,minCollateral) (contracts/PoolHedger.sol#130)
+PoolHedger.increaseLong(SynthetixAdapter.ExchangeParams,uint256,uint256) (contracts/PoolHedger.sol#335-352) ignores return value by synthetixAdapter.exchangeFromExactQuote(address(optionMarket),purchaseAmount) (contracts/PoolHedger.sol#349)
+PoolHedger.decreaseLong(uint256,uint256) (contracts/PoolHedger.sol#359-364) ignores return value by synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+PoolHedger.setShortTo(SynthetixAdapter.ExchangeParams,uint256,uint256,uint256) (contracts/PoolHedger.sol#376-403) ignores return value by exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+LiquidityTokens.mint(address,uint256).owner (contracts/LiquidityTokens.sol#61) shadows:
+	- AbstractOwned.owner (contracts/synthetix/AbstractOwned.sol#32) (state variable)
+LiquidityTokens.burn(address,uint256).owner (contracts/LiquidityTokens.sol#68) shadows:
+	- AbstractOwned.owner (contracts/synthetix/AbstractOwned.sol#32) (state variable)
+OptionToken.getOwnerPositions(address).owner (contracts/OptionToken.sol#592) shadows:
+	- AbstractOwned.owner (contracts/synthetix/AbstractOwned.sol#32) (state variable)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#local-variable-shadowing
+
+LiquidityTokens.init(address) (contracts/LiquidityTokens.sol#42-44) should emit an event for: 
+	- liquidityPool = _liquidityPool (contracts/LiquidityTokens.sol#43) 
+OptionGreekCache.init(SynthetixAdapter,OptionMarket,address) (contracts/OptionGreekCache.sol#221-229) should emit an event for: 
+	- optionMarketPricer = _optionMarketPricer (contracts/OptionGreekCache.sol#228) 
+OptionMarketPricer.init(address,OptionGreekCache) (contracts/OptionMarketPricer.sol#160-163) should emit an event for: 
+	- optionMarket = _optionMarket (contracts/OptionMarketPricer.sol#161) 
+OptionToken.init(OptionMarket,OptionGreekCache,address,SynthetixAdapter) (contracts/OptionToken.sol#120-130) should emit an event for: 
+	- shortCollateral = _shortCollateral (contracts/OptionToken.sol#128) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-access-control
+
+AbstractOwned.nominateNewOwner(address)._owner (contracts/synthetix/AbstractOwned.sol#35) lacks a zero-check on :
+		- nominatedOwner = _owner (contracts/synthetix/AbstractOwned.sol#36)
+LiquidityTokens.init(address)._liquidityPool (contracts/LiquidityTokens.sol#42) lacks a zero-check on :
+		- liquidityPool = _liquidityPool (contracts/LiquidityTokens.sol#43)
+OptionGreekCache.init(SynthetixAdapter,OptionMarket,address)._optionMarketPricer (contracts/OptionGreekCache.sol#224) lacks a zero-check on :
+		- optionMarketPricer = _optionMarketPricer (contracts/OptionGreekCache.sol#228)
+OptionMarketPricer.init(address,OptionGreekCache)._optionMarket (contracts/OptionMarketPricer.sol#160) lacks a zero-check on :
+		- optionMarket = _optionMarket (contracts/OptionMarketPricer.sol#161)
+OptionToken.init(OptionMarket,OptionGreekCache,address,SynthetixAdapter)._shortCollateral (contracts/OptionToken.sol#123) lacks a zero-check on :
+		- shortCollateral = _shortCollateral (contracts/OptionToken.sol#128)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-zero-address-validation
+
+LiquidityPool.processDepositQueue(uint256) (contracts/LiquidityPool.sol#295-322) has external calls inside a loop: liquidityTokens.mint(current.beneficiary,amountTokens) (contracts/LiquidityPool.sol#305)
+LiquidityPool._getTokenPriceAndStale() (contracts/LiquidityPool.sol#416-452) has external calls inside a loop: exchangeParams = synthetixAdapter.getExchangeParams(address(optionMarket)) (contracts/LiquidityPool.sol#424)
+LiquidityPool._getTokenPriceAndStale() (contracts/LiquidityPool.sol#416-452) has external calls inside a loop: globalCache = greekCache.getGlobalCache() (contracts/LiquidityPool.sol#426)
+LiquidityPool._getTokenPriceAndStale() (contracts/LiquidityPool.sol#416-452) has external calls inside a loop: stale = greekCache.isGlobalCacheStale(exchangeParams.spotPrice) (contracts/LiquidityPool.sol#427)
+LiquidityPool._getPoolHedgerLiquidity(ICollateralShort,uint256) (contracts/LiquidityPool.sol#915-924) has external calls inside a loop: poolHedger.getHedgingLiquidity(short,basePrice) (contracts/LiquidityPool.sol#921)
+LiquidityPool._getTotalPoolValueQuote(uint256,uint256,int256) (contracts/LiquidityPool.sol#786-803) has external calls inside a loop: totalAssetValue = quoteAsset.balanceOf(address(this)) + baseAsset.balanceOf(address(this)).multiplyDecimal(basePrice) + usedDeltaLiquidity - totalOutstandingSettlements - totalQueuedDeposits (contracts/LiquidityPool.sol#791-795)
+LiquidityPool.getTotalTokenSupply() (contracts/LiquidityPool.sol#729-731) has external calls inside a loop: liquidityTokens.totalSupply() + totalQueuedWithdrawals (contracts/LiquidityPool.sol#730)
+LiquidityPool._getLiquidity(uint256,uint256,uint256,uint256,uint256) (contracts/LiquidityPool.sol#810-846) has external calls inside a loop: baseBalance = baseAsset.balanceOf(address(this)) (contracts/LiquidityPool.sol#820)
+LiquidityPool._getLiquidity(uint256,uint256,uint256,uint256,uint256) (contracts/LiquidityPool.sol#810-846) has external calls inside a loop: totalQuote = quoteAsset.balanceOf(address(this)) (contracts/LiquidityPool.sol#833)
+LiquidityPool._getTotalBurnableTokens() (contracts/LiquidityPool.sol#395-414) has external calls inside a loop: optionMarket.getNumLiveBoards() != 0 (contracts/LiquidityPool.sol#407)
+LiquidityPool._transferQuote(address,uint256) (contracts/LiquidityPool.sol#952-958) has external calls inside a loop: ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+ShortCollateral.settleOptions(uint256[]) (contracts/ShortCollateral.sol#166-235) has external calls inside a loop: (strikePrice,priceAtExpiry,ammShortCallBaseProfitRatio) = optionMarket.getSettlementParameters(position.strikeId) (contracts/ShortCollateral.sol#178-180)
+ShortCollateral._sendLongCallProceeds(address,uint256,uint256,uint256) (contracts/ShortCollateral.sol#258-266) has external calls inside a loop: liquidityPool.sendSettlementValue(account,settlementAmount) (contracts/ShortCollateral.sol#265)
+ShortCollateral._sendLongPutProceeds(address,uint256,uint256,uint256) (contracts/ShortCollateral.sol#268-276) has external calls inside a loop: liquidityPool.sendSettlementValue(account,settlementAmount) (contracts/ShortCollateral.sol#275)
+ShortCollateral._sendBaseCollateral(address,uint256) (contracts/ShortCollateral.sol#345-360) has external calls inside a loop: currentBalance = baseAsset.balanceOf(address(this)) (contracts/ShortCollateral.sol#350)
+ShortCollateral._sendBaseCollateral(address,uint256) (contracts/ShortCollateral.sol#345-360) has external calls inside a loop: ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+ShortCollateral._sendQuoteCollateral(address,uint256) (contracts/ShortCollateral.sol#328-343) has external calls inside a loop: currentBalance = quoteAsset.balanceOf(address(this)) (contracts/ShortCollateral.sol#333)
+ShortCollateral._sendQuoteCollateral(address,uint256) (contracts/ShortCollateral.sol#328-343) has external calls inside a loop: ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+
+Reentrancy in PoolHedger._hedgeDelta(int256) (contracts/PoolHedger.sol#266-282):
+	External calls:
+	- newHedge = updatePosition(exchangeParams,longBalance,shortBalance,collateral,expectedHedge) (contracts/PoolHedger.sol#272)
+		- synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+		- receivedQuote = liquidityPool.transferQuoteToHedge(exchangeParams,purchaseAmount) (contracts/PoolHedger.sol#342)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+		- synthetixAdapter.exchangeFromExactQuote(address(optionMarket),purchaseAmount) (contracts/PoolHedger.sol#349)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+		- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	State variables written after the call(s):
+	- lastInteraction = block.timestamp (contracts/PoolHedger.sol#277)
+Reentrancy in PoolHedger._openShortAccount(SynthetixAdapter.ExchangeParams) (contracts/PoolHedger.sol#124-142):
+	External calls:
+	- minCollateral = exchangeParams.short.minCollateral() (contracts/PoolHedger.sol#125)
+	- quoteAsset.approve(address(exchangeParams.short),type()(uint256).max) (contracts/PoolHedger.sol#127)
+	- liquidityPool.transferQuoteToHedge(exchangeParams,minCollateral) (contracts/PoolHedger.sol#130)
+	- shortId = exchangeParams.short.open(minCollateral,0,exchangeParams.baseKey) (contracts/PoolHedger.sol#138)
+	State variables written after the call(s):
+	- shortId = exchangeParams.short.open(minCollateral,0,exchangeParams.baseKey) (contracts/PoolHedger.sol#138)
+Reentrancy in ShortCollateral._reclaimInsolvency(uint256,uint256) (contracts/ShortCollateral.sol#238-256):
+	External calls:
+	- liquidityPool.reclaimInsolventBase(exchangeParams,baseInsolventAmount) (contracts/ShortCollateral.sol#246)
+	State variables written after the call(s):
+	- LPQuoteExcess -= quoteInsolventAmount (contracts/ShortCollateral.sol#250)
+	- LPQuoteExcess = 0 (contracts/ShortCollateral.sol#253)
+Reentrancy in LiquidityPool.reclaimInsolventBase(SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#706-723):
+	External calls:
+	- (quoteSpent) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase,liquidity.freeLiquidity) (contracts/LiquidityPool.sol#711-716)
+	State variables written after the call(s):
+	- insolventSettlementAmount += quoteSpent (contracts/LiquidityPool.sol#717)
+Reentrancy in LiquidityPool.reclaimInsolventQuote(SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#691-704):
+	External calls:
+	- _transferQuote(address(shortCollateral),amountQuote) (contracts/LiquidityPool.sol#699)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	State variables written after the call(s):
+	- insolventSettlementAmount += amountQuote (contracts/LiquidityPool.sol#701)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+Reentrancy in OptionMarket._closePosition(OptionMarket.TradeInputParameters,bool) (contracts/OptionMarket.sol#551-608):
+	External calls:
+	- (trade.amount,result.totalCost,result.totalFee,tradeResults) = _doTrade(strike,board,trade,params.iterations,params.amount) (contracts/OptionMarket.sol#562-568)
+		- tradeResult = optionPricer.updateCacheAndGetTradeResult(strike,trade,board.iv,board.expiry) (contracts/OptionMarket.sol#705-710)
+	- (result.positionId,pendingCollateral) = optionToken.adjustPosition(trade,params.strikeId,msg.sender,params.positionId,result.totalCost,params.setCollateralTo,false) (contracts/OptionMarket.sol#572-580)
+	- _routeUserCollateral(trade.optionType,pendingCollateral) (contracts/OptionMarket.sol#584)
+		- ! quoteAsset.transferFrom(from,to,amount) (contracts/OptionMarket.sol#1046)
+		- ! baseAsset.transferFrom(msg.sender,address(shortCollateral),uint256(pendingCollateral)) (contracts/OptionMarket.sol#863)
+		- shortCollateral.sendBaseCollateral(msg.sender,uint256(- pendingCollateral)) (contracts/OptionMarket.sol#867)
+		- shortCollateral.sendQuoteCollateral(msg.sender,uint256(- pendingCollateral)) (contracts/OptionMarket.sol#874)
+	- _routeLPFundsOnClose(trade,result.totalCost,reservedFee) (contracts/OptionMarket.sol#585)
+		- ! quoteAsset.transferFrom(from,to,amount) (contracts/OptionMarket.sol#1046)
+		- liquidityPool.liquidateBaseAndSendPremium(trade.amount,msg.sender,totalCost,reservedFee) (contracts/OptionMarket.sol#837)
+		- liquidityPool.freeQuoteCollateralAndSendPremium(trade.amount.multiplyDecimal(trade.strikePrice),msg.sender,totalCost,reservedFee) (contracts/OptionMarket.sol#839-844)
+		- shortCollateral.sendQuoteCollateral(address(liquidityPool),totalCost - reservedFee) (contracts/OptionMarket.sol#850)
+		- shortCollateral.sendQuoteCollateral(address(this),reservedFee) (contracts/OptionMarket.sol#851)
+	- liquidityPool.updateCBs() (contracts/OptionMarket.sol#586)
+	Event emitted after the call(s):
+	- Trade(msg.sender,params.strikeId,result.positionId,TradeEventData(trade.expiry,trade.strikePrice,params.optionType,TradeDirection.CLOSE,params.amount,params.setCollateralTo,forceClose,reservedFee,trade.exchangeParams.spotPrice,result.totalCost),tradeResults,LiquidationEventData(address(0),address(0),0,0,0,0,0,0),block.timestamp) (contracts/OptionMarket.sol#588-607)
+Reentrancy in ShortCollateral._exchangeAndSendBaseCollateral(address,uint256) (contracts/ShortCollateral.sol#362-379):
+	External calls:
+	- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/ShortCollateral.sol#372)
+	- ! quoteAsset.transfer(recipient,quoteReceived) (contracts/ShortCollateral.sol#374)
+	Event emitted after the call(s):
+	- BaseExchangedAndQuoteSent(recipient,amountBase,quoteReceived) (contracts/ShortCollateral.sol#378)
+Reentrancy in SynthetixAdapter._exchangeBaseForQuote(address,uint256) (contracts/SynthetixAdapter.sol#303-326):
+	External calls:
+	- quoteReceived = synthetix.exchangeOnBehalfWithTracking(msg.sender,baseKey[optionMarket],amountBase,quoteKey[optionMarket],rewardAddress[optionMarket],trackingCode[optionMarket]) (contracts/SynthetixAdapter.sol#308-315)
+	Event emitted after the call(s):
+	- BaseSwappedForQuote(optionMarket,msg.sender,amountBase,quoteReceived) (contracts/SynthetixAdapter.sol#325)
+Reentrancy in SynthetixAdapter._exchangeQuoteForBase(address,uint256) (contracts/SynthetixAdapter.sol#231-253):
+	External calls:
+	- baseReceived = synthetix.exchangeOnBehalfWithTracking(msg.sender,quoteKey[optionMarket],amountQuote,baseKey[optionMarket],rewardAddress[optionMarket],trackingCode[optionMarket]) (contracts/SynthetixAdapter.sol#235-242)
+	Event emitted after the call(s):
+	- QuoteSwappedForBase(optionMarket,msg.sender,amountQuote,baseReceived) (contracts/SynthetixAdapter.sol#252)
+Reentrancy in PoolHedger._hedgeDelta(int256) (contracts/PoolHedger.sol#266-282):
+	External calls:
+	- newHedge = updatePosition(exchangeParams,longBalance,shortBalance,collateral,expectedHedge) (contracts/PoolHedger.sol#272)
+		- synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+		- receivedQuote = liquidityPool.transferQuoteToHedge(exchangeParams,purchaseAmount) (contracts/PoolHedger.sol#342)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+		- synthetixAdapter.exchangeFromExactQuote(address(optionMarket),purchaseAmount) (contracts/PoolHedger.sol#349)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+		- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	Event emitted after the call(s):
+	- PositionUpdated(oldHedge,newHedge,expectedHedge) (contracts/PoolHedger.sol#274)
+Reentrancy in PoolHedger._hedgeDelta(int256) (contracts/PoolHedger.sol#266-282):
+	External calls:
+	- newHedge = updatePosition(exchangeParams,longBalance,shortBalance,collateral,expectedHedge) (contracts/PoolHedger.sol#272)
+		- synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+		- receivedQuote = liquidityPool.transferQuoteToHedge(exchangeParams,purchaseAmount) (contracts/PoolHedger.sol#342)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+		- synthetixAdapter.exchangeFromExactQuote(address(optionMarket),purchaseAmount) (contracts/PoolHedger.sol#349)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+		- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	- sendAllQuoteToLP() (contracts/PoolHedger.sol#281)
+		- ! quoteAsset.transfer(address(liquidityPool),quoteBal) (contracts/PoolHedger.sol#453)
+	Event emitted after the call(s):
+	- QuoteReturnedToLP(quoteBal) (contracts/PoolHedger.sol#456)
+		- sendAllQuoteToLP() (contracts/PoolHedger.sol#281)
+Reentrancy in LiquidityPool._maybeExchangeBase(SynthetixAdapter.ExchangeParams,uint256,bool) (contracts/LiquidityPool.sol#861-898):
+	External calls:
+	- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/LiquidityPool.sol#873)
+	Event emitted after the call(s):
+	- BaseSold(amountBase,quoteReceived) (contracts/LiquidityPool.sol#874)
+Reentrancy in LiquidityPool._maybeExchangeBase(SynthetixAdapter.ExchangeParams,uint256,bool) (contracts/LiquidityPool.sol#861-898):
+	External calls:
+	- (quoteSpent,baseReceived) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase_scope_0,freeLiquidity) (contracts/LiquidityPool.sol#890-895)
+	- (quoteSpent,baseReceived) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase_scope_0,type()(uint256).max) (contracts/LiquidityPool.sol#890-895)
+	Event emitted after the call(s):
+	- BasePurchased(quoteSpent,baseReceived) (contracts/LiquidityPool.sol#896)
+Reentrancy in OptionMarket._openPosition(OptionMarket.TradeInputParameters) (contracts/OptionMarket.sol#489-545):
+	External calls:
+	- (trade.amount,result.totalCost,result.totalFee,tradeResults) = _doTrade(strike,board,trade,params.iterations,params.amount) (contracts/OptionMarket.sol#499-505)
+		- tradeResult = optionPricer.updateCacheAndGetTradeResult(strike,trade,board.iv,board.expiry) (contracts/OptionMarket.sol#705-710)
+	- (result.positionId,pendingCollateral) = optionToken.adjustPosition(trade,params.strikeId,msg.sender,params.positionId,result.totalCost,params.setCollateralTo,true) (contracts/OptionMarket.sol#509-517)
+	- _routeLPFundsOnOpen(trade,result.totalCost,reservedFee) (contracts/OptionMarket.sol#521)
+		- ! quoteAsset.transferFrom(from,to,amount) (contracts/OptionMarket.sol#1046)
+		- liquidityPool.lockBase(trade.amount,trade.exchangeParams,trade.liquidity.freeLiquidity) (contracts/OptionMarket.sol#812)
+		- liquidityPool.lockQuote(trade.amount.multiplyDecimal(trade.strikePrice),trade.liquidity.freeLiquidity) (contracts/OptionMarket.sol#816)
+		- liquidityPool.sendShortPremium(msg.sender,totalCost,trade.liquidity.freeLiquidity,feePortion) (contracts/OptionMarket.sol#820)
+		- liquidityPool.sendShortPremium(address(shortCollateral),totalCost,trade.liquidity.freeLiquidity,feePortion) (contracts/OptionMarket.sol#823)
+	- _routeUserCollateral(trade.optionType,pendingCollateral) (contracts/OptionMarket.sol#522)
+		- ! quoteAsset.transferFrom(from,to,amount) (contracts/OptionMarket.sol#1046)
+		- ! baseAsset.transferFrom(msg.sender,address(shortCollateral),uint256(pendingCollateral)) (contracts/OptionMarket.sol#863)
+		- shortCollateral.sendBaseCollateral(msg.sender,uint256(- pendingCollateral)) (contracts/OptionMarket.sol#867)
+		- shortCollateral.sendQuoteCollateral(msg.sender,uint256(- pendingCollateral)) (contracts/OptionMarket.sol#874)
+	- liquidityPool.updateCBs() (contracts/OptionMarket.sol#523)
+	Event emitted after the call(s):
+	- Trade(msg.sender,params.strikeId,result.positionId,TradeEventData(trade.expiry,trade.strikePrice,params.optionType,TradeDirection.OPEN,trade.amount,params.setCollateralTo,false,trade.exchangeParams.spotPrice,reservedFee,result.totalCost),tradeResults,LiquidationEventData(address(0),address(0),0,0,0,0,0,0),block.timestamp) (contracts/OptionMarket.sol#525-544)
+Reentrancy in PoolHedger._openShortAccount(SynthetixAdapter.ExchangeParams) (contracts/PoolHedger.sol#124-142):
+	External calls:
+	- minCollateral = exchangeParams.short.minCollateral() (contracts/PoolHedger.sol#125)
+	- quoteAsset.approve(address(exchangeParams.short),type()(uint256).max) (contracts/PoolHedger.sol#127)
+	- liquidityPool.transferQuoteToHedge(exchangeParams,minCollateral) (contracts/PoolHedger.sol#130)
+	- shortId = exchangeParams.short.open(minCollateral,0,exchangeParams.baseKey) (contracts/PoolHedger.sol#138)
+	- sendAllQuoteToLP() (contracts/PoolHedger.sol#139)
+		- ! quoteAsset.transfer(address(liquidityPool),quoteBal) (contracts/PoolHedger.sol#453)
+	Event emitted after the call(s):
+	- OpenedShortAccount(shortId) (contracts/PoolHedger.sol#140)
+	- QuoteReturnedToLP(quoteBal) (contracts/PoolHedger.sol#456)
+		- sendAllQuoteToLP() (contracts/PoolHedger.sol#139)
+	- ShortSetTo(0,0,0,minCollateral) (contracts/PoolHedger.sol#141)
+Reentrancy in ShortCollateral._sendBaseCollateral(address,uint256) (contracts/ShortCollateral.sol#345-360):
+	External calls:
+	- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	Event emitted after the call(s):
+	- BaseSent(recipient,amount) (contracts/ShortCollateral.sol#359)
+Reentrancy in LiquidityPool._sendPremium(address,uint256,uint256) (contracts/LiquidityPool.sol#655-664):
+	External calls:
+	- _transferQuote(recipient,recipientAmount) (contracts/LiquidityPool.sol#660)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	- _transferQuote(address(optionMarket),optionMarketPortion) (contracts/LiquidityPool.sol#661)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- PremiumTransferred(recipient,recipientAmount,optionMarketPortion) (contracts/LiquidityPool.sol#663)
+Reentrancy in ShortCollateral._sendQuoteCollateral(address,uint256) (contracts/ShortCollateral.sol#328-343):
+	External calls:
+	- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	Event emitted after the call(s):
+	- QuoteSent(recipient,amount) (contracts/ShortCollateral.sol#342)
+Reentrancy in OptionMarket._settleExpiredBoard(OptionMarket.OptionBoard) (contracts/OptionMarket.sol#953-1019):
+	External calls:
+	- (lpBaseInsolvency,lpQuoteInsolvency) = shortCollateral.boardSettlement(totalAMMShortCallProfitBase,totalAMMShortPutProfitQuote + totalAMMShortCallProfitQuote) (contracts/OptionMarket.sol#996-999)
+	- liquidityPool.boardSettlement(lpQuoteInsolvency + lpBaseInsolvency.multiplyDecimal(exchangeParams.spotPrice),totalBoardLongPutCollateral,totalUserLongProfitQuote,totalBoardLongCallCollateral) (contracts/OptionMarket.sol#1002-1007)
+	Event emitted after the call(s):
+	- BoardSettled(board.id,exchangeParams.spotPrice,totalUserLongProfitQuote,totalBoardLongCallCollateral,totalBoardLongPutCollateral,totalAMMShortCallProfitBase,totalAMMShortCallProfitQuote,totalAMMShortPutProfitQuote) (contracts/OptionMarket.sol#1009-1018)
+Reentrancy in ShortCollateral.boardSettlement(uint256,uint256) (contracts/ShortCollateral.sol#122-152):
+	External calls:
+	- _sendBaseCollateral(address(liquidityPool),amountBase) (contracts/ShortCollateral.sol#141)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- _sendQuoteCollateral(address(liquidityPool),amountQuote) (contracts/ShortCollateral.sol#142)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	Event emitted after the call(s):
+	- BoardSettlementCollateralSent(amountBase,amountQuote,lpBaseInsolvency,lpQuoteInsolvency,LPBaseExcess,LPQuoteExcess) (contracts/ShortCollateral.sol#144-151)
+	- QuoteSent(recipient,amount) (contracts/ShortCollateral.sol#342)
+		- _sendQuoteCollateral(address(liquidityPool),amountQuote) (contracts/ShortCollateral.sol#142)
+Reentrancy in PoolHedger.decreaseLong(uint256,uint256) (contracts/PoolHedger.sol#359-364):
+	External calls:
+	- synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+	Event emitted after the call(s):
+	- LongSetTo(currentBalance,newBalance) (contracts/PoolHedger.sol#363)
+Reentrancy in PoolHedger.increaseLong(SynthetixAdapter.ExchangeParams,uint256,uint256) (contracts/PoolHedger.sol#335-352):
+	External calls:
+	- receivedQuote = liquidityPool.transferQuoteToHedge(exchangeParams,purchaseAmount) (contracts/PoolHedger.sol#342)
+	- synthetixAdapter.exchangeFromExactQuote(address(optionMarket),purchaseAmount) (contracts/PoolHedger.sol#349)
+	Event emitted after the call(s):
+	- LongSetTo(currentBalance,newBalance) (contracts/PoolHedger.sol#351)
+Reentrancy in LiquidityPool.initiateDeposit(address,uint256) (contracts/LiquidityPool.sol#221-249):
+	External calls:
+	- liquidityTokens.mint(beneficiary,amountTokens) (contracts/LiquidityPool.sol#231)
+	Event emitted after the call(s):
+	- DepositProcessed(msg.sender,beneficiary,0,amountQuote,tokenPrice,amountTokens,block.timestamp) (contracts/LiquidityPool.sol#232)
+Reentrancy in LiquidityPool.initiateWithdraw(address,uint256) (contracts/LiquidityPool.sol#251-292):
+	External calls:
+	- _transferQuote(beneficiary,quoteReceived) (contracts/LiquidityPool.sol#261)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- WithdrawProcessed(msg.sender,beneficiary,0,amountLiquidityTokens,tokenPrice,quoteReceived,totalQueuedWithdrawals,block.timestamp) (contracts/LiquidityPool.sol#262-271)
+Reentrancy in LiquidityPool.liquidateBaseAndSendPremium(uint256,address,uint256,uint256) (contracts/LiquidityPool.sol#563-572):
+	External calls:
+	- exchangeBase() (contracts/LiquidityPool.sol#570)
+		- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/LiquidityPool.sol#873)
+		- (quoteSpent,baseReceived) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase_scope_0,freeLiquidity) (contracts/LiquidityPool.sol#890-895)
+		- (quoteSpent,baseReceived) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase_scope_0,type()(uint256).max) (contracts/LiquidityPool.sol#890-895)
+	- _sendPremium(recipient,totalCost,reservedFee) (contracts/LiquidityPool.sol#571)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- PremiumTransferred(recipient,recipientAmount,optionMarketPortion) (contracts/LiquidityPool.sol#663)
+		- _sendPremium(recipient,totalCost,reservedFee) (contracts/LiquidityPool.sol#571)
+Reentrancy in OptionMarket.liquidatePosition(uint256,address) (contracts/OptionMarket.sol#737-796):
+	External calls:
+	- (totalCost,tradeResults) = _doTrade(strike,board,trade,1,position.amount) (contracts/OptionMarket.sol#750-756)
+		- tradeResult = optionPricer.updateCacheAndGetTradeResult(strike,trade,board.iv,board.expiry) (contracts/OptionMarket.sol#705-710)
+	- liquidationFees = optionToken.liquidate(positionId,trade,totalCost) (contracts/OptionMarket.sol#758)
+	- liquidityPool.updateLiquidationInsolvency(liquidationFees.insolventAmount) (contracts/OptionMarket.sol#761)
+	- shortCollateral.routeLiquidationFunds(position.owner,rewardBeneficiary,position.optionType,liquidationFees) (contracts/OptionMarket.sol#764)
+	- liquidityPool.updateCBs() (contracts/OptionMarket.sol#765)
+	Event emitted after the call(s):
+	- Trade(position.owner,position.strikeId,positionId,TradeEventData(trade.expiry,trade.strikePrice,position.optionType,TradeDirection.LIQUIDATE,position.amount,0,true,trade.exchangeParams.spotPrice,0,totalCost),tradeResults,LiquidationEventData(msg.sender,rewardBeneficiary,liquidationFees.returnCollateral,liquidationFees.lpPremiums,liquidationFees.lpFee,liquidationFees.liquidatorFee,liquidationFees.smFee,liquidationFees.insolventAmount),block.timestamp) (contracts/OptionMarket.sol#767-795)
+Reentrancy in LiquidityPool.lockBase(uint256,SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#533-541):
+	External calls:
+	- _maybeExchangeBase(exchangeParams,freeLiquidity,true) (contracts/LiquidityPool.sol#539)
+		- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/LiquidityPool.sol#873)
+		- (quoteSpent,baseReceived) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase_scope_0,freeLiquidity) (contracts/LiquidityPool.sol#890-895)
+		- (quoteSpent,baseReceived) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase_scope_0,type()(uint256).max) (contracts/LiquidityPool.sol#890-895)
+	Event emitted after the call(s):
+	- BaseLocked(amount,lockedCollateral.base) (contracts/LiquidityPool.sol#540)
+Reentrancy in PoolHedger.openShortAccount() (contracts/PoolHedger.sol#107-117):
+	External calls:
+	- (interestIndex) = exchangeParams.short.loans(shortId) (contracts/PoolHedger.sol#110)
+	- _openShortAccount(exchangeParams) (contracts/PoolHedger.sol#116)
+		- minCollateral = exchangeParams.short.minCollateral() (contracts/PoolHedger.sol#125)
+		- ! quoteAsset.transfer(address(liquidityPool),quoteBal) (contracts/PoolHedger.sol#453)
+		- quoteAsset.approve(address(exchangeParams.short),type()(uint256).max) (contracts/PoolHedger.sol#127)
+		- liquidityPool.transferQuoteToHedge(exchangeParams,minCollateral) (contracts/PoolHedger.sol#130)
+		- shortId = exchangeParams.short.open(minCollateral,0,exchangeParams.baseKey) (contracts/PoolHedger.sol#138)
+	Event emitted after the call(s):
+	- OpenedShortAccount(shortId) (contracts/PoolHedger.sol#140)
+		- _openShortAccount(exchangeParams) (contracts/PoolHedger.sol#116)
+	- QuoteReturnedToLP(quoteBal) (contracts/PoolHedger.sol#456)
+		- _openShortAccount(exchangeParams) (contracts/PoolHedger.sol#116)
+	- ShortSetTo(0,0,0,minCollateral) (contracts/PoolHedger.sol#141)
+		- _openShortAccount(exchangeParams) (contracts/PoolHedger.sol#116)
+Reentrancy in LiquidityPool.processDepositQueue(uint256) (contracts/LiquidityPool.sol#295-322):
+	External calls:
+	- liquidityTokens.mint(current.beneficiary,amountTokens) (contracts/LiquidityPool.sol#305)
+	Event emitted after the call(s):
+	- DepositProcessed(msg.sender,current.beneficiary,queuedDepositHead,current.amountLiquidity,tokenPrice,amountTokens,block.timestamp) (contracts/LiquidityPool.sol#309-317)
+Reentrancy in LiquidityPool.processWithdrawalQueue(uint256) (contracts/LiquidityPool.sol#325-375):
+	External calls:
+	- _transferQuote(current.beneficiary,quoteAmount) (contracts/LiquidityPool.sol#349)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- WithdrawPartiallyProcessed(msg.sender,current.beneficiary,queuedWithdrawalHead,burnAmount,tokenPriceWithFee,quoteAmount,totalQueuedWithdrawals,block.timestamp) (contracts/LiquidityPool.sol#351-360)
+	- WithdrawProcessed(msg.sender,current.beneficiary,queuedWithdrawalHead,burnAmount,tokenPriceWithFee,quoteAmount,totalQueuedWithdrawals,block.timestamp) (contracts/LiquidityPool.sol#363-372)
+Reentrancy in LiquidityPool.reclaimInsolventBase(SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#706-723):
+	External calls:
+	- (quoteSpent) = synthetixAdapter.exchangeToExactBaseWithLimit(exchangeParams,address(optionMarket),amountBase,liquidity.freeLiquidity) (contracts/LiquidityPool.sol#711-716)
+	- baseAsset.transfer(address(shortCollateral),amountBase) (contracts/LiquidityPool.sol#720)
+	Event emitted after the call(s):
+	- InsolventSettlementAmountUpdated(quoteSpent,insolventSettlementAmount) (contracts/LiquidityPool.sol#722)
+Reentrancy in LiquidityPool.reclaimInsolventQuote(SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#691-704):
+	External calls:
+	- _transferQuote(address(shortCollateral),amountQuote) (contracts/LiquidityPool.sol#699)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- InsolventSettlementAmountUpdated(amountQuote,insolventSettlementAmount) (contracts/LiquidityPool.sol#703)
+Reentrancy in ShortCollateral.routeLiquidationFunds(address,address,OptionType,OptionToken.LiquidationFees) (contracts/ShortCollateral.sol#92-110):
+	External calls:
+	- _sendBaseCollateral(trader,liquidationFees.returnCollateral) (contracts/ShortCollateral.sol#99)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- _sendBaseCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#100)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	Event emitted after the call(s):
+	- BaseSent(recipient,amount) (contracts/ShortCollateral.sol#359)
+		- _sendBaseCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#100)
+Reentrancy in ShortCollateral.routeLiquidationFunds(address,address,OptionType,OptionToken.LiquidationFees) (contracts/ShortCollateral.sol#92-110):
+	External calls:
+	- _sendBaseCollateral(trader,liquidationFees.returnCollateral) (contracts/ShortCollateral.sol#99)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- _sendBaseCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#100)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- _exchangeAndSendBaseCollateral(address(optionMarket),liquidationFees.smFee) (contracts/ShortCollateral.sol#101)
+		- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/ShortCollateral.sol#372)
+		- ! quoteAsset.transfer(recipient,quoteReceived) (contracts/ShortCollateral.sol#374)
+	Event emitted after the call(s):
+	- BaseExchangedAndQuoteSent(recipient,amountBase,quoteReceived) (contracts/ShortCollateral.sol#378)
+		- _exchangeAndSendBaseCollateral(address(optionMarket),liquidationFees.smFee) (contracts/ShortCollateral.sol#101)
+Reentrancy in ShortCollateral.routeLiquidationFunds(address,address,OptionType,OptionToken.LiquidationFees) (contracts/ShortCollateral.sol#92-110):
+	External calls:
+	- _sendBaseCollateral(trader,liquidationFees.returnCollateral) (contracts/ShortCollateral.sol#99)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- _sendBaseCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#100)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- _exchangeAndSendBaseCollateral(address(optionMarket),liquidationFees.smFee) (contracts/ShortCollateral.sol#101)
+		- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/ShortCollateral.sol#372)
+		- ! quoteAsset.transfer(recipient,quoteReceived) (contracts/ShortCollateral.sol#374)
+	- _exchangeAndSendBaseCollateral(address(liquidityPool),liquidationFees.lpFee + liquidationFees.lpPremiums) (contracts/ShortCollateral.sol#102)
+		- quoteReceived = synthetixAdapter.exchangeFromExactBase(address(optionMarket),amountBase) (contracts/ShortCollateral.sol#372)
+		- ! quoteAsset.transfer(recipient,quoteReceived) (contracts/ShortCollateral.sol#374)
+	Event emitted after the call(s):
+	- BaseExchangedAndQuoteSent(recipient,amountBase,quoteReceived) (contracts/ShortCollateral.sol#378)
+		- _exchangeAndSendBaseCollateral(address(liquidityPool),liquidationFees.lpFee + liquidationFees.lpPremiums) (contracts/ShortCollateral.sol#102)
+Reentrancy in ShortCollateral.routeLiquidationFunds(address,address,OptionType,OptionToken.LiquidationFees) (contracts/ShortCollateral.sol#92-110):
+	External calls:
+	- _sendQuoteCollateral(trader,liquidationFees.returnCollateral) (contracts/ShortCollateral.sol#105)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- _sendQuoteCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#106)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	Event emitted after the call(s):
+	- QuoteSent(recipient,amount) (contracts/ShortCollateral.sol#342)
+		- _sendQuoteCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#106)
+Reentrancy in ShortCollateral.routeLiquidationFunds(address,address,OptionType,OptionToken.LiquidationFees) (contracts/ShortCollateral.sol#92-110):
+	External calls:
+	- _sendQuoteCollateral(trader,liquidationFees.returnCollateral) (contracts/ShortCollateral.sol#105)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- _sendQuoteCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#106)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- _sendQuoteCollateral(address(optionMarket),liquidationFees.smFee) (contracts/ShortCollateral.sol#107)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	Event emitted after the call(s):
+	- QuoteSent(recipient,amount) (contracts/ShortCollateral.sol#342)
+		- _sendQuoteCollateral(address(optionMarket),liquidationFees.smFee) (contracts/ShortCollateral.sol#107)
+Reentrancy in ShortCollateral.routeLiquidationFunds(address,address,OptionType,OptionToken.LiquidationFees) (contracts/ShortCollateral.sol#92-110):
+	External calls:
+	- _sendQuoteCollateral(trader,liquidationFees.returnCollateral) (contracts/ShortCollateral.sol#105)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- _sendQuoteCollateral(liquidator,liquidationFees.liquidatorFee) (contracts/ShortCollateral.sol#106)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- _sendQuoteCollateral(address(optionMarket),liquidationFees.smFee) (contracts/ShortCollateral.sol#107)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- _sendQuoteCollateral(address(liquidityPool),liquidationFees.lpFee + liquidationFees.lpPremiums) (contracts/ShortCollateral.sol#108)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	Event emitted after the call(s):
+	- QuoteSent(recipient,amount) (contracts/ShortCollateral.sol#342)
+		- _sendQuoteCollateral(address(liquidityPool),liquidationFees.lpFee + liquidationFees.lpPremiums) (contracts/ShortCollateral.sol#108)
+Reentrancy in PoolHedger.sendAllQuoteToLP() (contracts/PoolHedger.sol#451-457):
+	External calls:
+	- ! quoteAsset.transfer(address(liquidityPool),quoteBal) (contracts/PoolHedger.sol#453)
+	Event emitted after the call(s):
+	- QuoteReturnedToLP(quoteBal) (contracts/PoolHedger.sol#456)
+Reentrancy in LiquidityPool.sendSettlementValue(address,uint256) (contracts/LiquidityPool.sol#680-689):
+	External calls:
+	- _transferQuote(user,amount) (contracts/LiquidityPool.sol#686)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- OutstandingSettlementSent(user,amount,totalOutstandingSettlements) (contracts/LiquidityPool.sol#688)
+Reentrancy in OptionMarket.setBoardBaseIv(uint256,uint256) (contracts/OptionMarket.sol#263-278):
+	External calls:
+	- greekCache.setBoardIv(boardId,baseIv) (contracts/OptionMarket.sol#276)
+	Event emitted after the call(s):
+	- BoardBaseIvSet(boardId,baseIv) (contracts/OptionMarket.sol#277)
+Reentrancy in PoolHedger.setShortTo(SynthetixAdapter.ExchangeParams,uint256,uint256,uint256) (contracts/PoolHedger.sol#376-403):
+	External calls:
+	- newCollateral = _updateCollateral(exchangeParams,desiredShort,startCollateral) (contracts/PoolHedger.sol#384)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+	- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+	- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	- newCollateral = _updateCollateral(exchangeParams,newShort,newCollateral) (contracts/PoolHedger.sol#398)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+	Event emitted after the call(s):
+	- ShortSetTo(startShort,newShort,startCollateral,newCollateral) (contracts/PoolHedger.sol#401)
+Reentrancy in OptionMarket.setStrikeSkew(uint256,uint256) (contracts/OptionMarket.sol#285-302):
+	External calls:
+	- greekCache.setStrikeSkew(strikeId,skew) (contracts/OptionMarket.sol#300)
+	Event emitted after the call(s):
+	- StrikeSkewSet(strikeId,skew) (contracts/OptionMarket.sol#301)
+Reentrancy in ShortCollateral.settleOptions(uint256[]) (contracts/ShortCollateral.sol#166-235):
+	External calls:
+	- settlementAmounts[i] = _sendLongCallProceeds(position.owner,position.amount,strikePrice,priceAtExpiry) (contracts/ShortCollateral.sol#187)
+		- liquidityPool.sendSettlementValue(account,settlementAmount) (contracts/ShortCollateral.sol#265)
+	- settlementAmounts[i] = _sendLongPutProceeds(position.owner,position.amount,strikePrice,priceAtExpiry) (contracts/ShortCollateral.sol#189)
+		- liquidityPool.sendSettlementValue(account,settlementAmount) (contracts/ShortCollateral.sol#275)
+	- (settlementAmounts[i],insolventAmount) = _sendShortCallBaseProceeds(position.owner,position.collateral,position.amount,ammShortCallBaseProfitRatio) (contracts/ShortCollateral.sol#192-197)
+		- ! baseAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#356)
+	- (settlementAmounts[i],insolventAmount_scope_0) = _sendShortCallQuoteProceeds(position.owner,position.collateral,position.amount,strikePrice,priceAtExpiry) (contracts/ShortCollateral.sol#201-207)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	- (settlementAmounts[i],insolventAmount_scope_1) = _sendShortPutQuoteProceeds(position.owner,position.collateral,position.amount,strikePrice,priceAtExpiry) (contracts/ShortCollateral.sol#212-218)
+		- ! quoteAsset.transfer(recipient,amount) (contracts/ShortCollateral.sol#339)
+	Event emitted after the call(s):
+	- PositionSettled(position.positionId,msg.sender,position.owner,strikePrice,priceAtExpiry,position.optionType,position.amount) (contracts/ShortCollateral.sol#222-230)
+Reentrancy in OptionMarket.smClaim() (contracts/OptionMarket.sol#363-377):
+	External calls:
+	- quoteAsset.transfer(msg.sender,quoteBal) (contracts/OptionMarket.sol#369)
+	- baseAsset.transfer(msg.sender,baseBal) (contracts/OptionMarket.sol#374)
+	Event emitted after the call(s):
+	- SMClaimed(msg.sender,quoteBal,baseBal) (contracts/OptionMarket.sol#376)
+Reentrancy in LiquidityPool.transferQuoteToHedge(SynthetixAdapter.ExchangeParams,uint256) (contracts/LiquidityPool.sol#934-950):
+	External calls:
+	- _transferQuote(address(poolHedger),amount) (contracts/LiquidityPool.sol#945)
+		- ! quoteAsset.transfer(to,amount) (contracts/LiquidityPool.sol#954)
+	Event emitted after the call(s):
+	- QuoteTransferredToPoolHedger(amount) (contracts/LiquidityPool.sol#947)
+Reentrancy in PoolHedger.updateCollateral() (contracts/PoolHedger.sol#246-254):
+	External calls:
+	- newCollateral = _updateCollateral(exchangeParams,shortBalance,startCollateral) (contracts/PoolHedger.sol#251)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+	- sendAllQuoteToLP() (contracts/PoolHedger.sol#252)
+		- ! quoteAsset.transfer(address(liquidityPool),quoteBal) (contracts/PoolHedger.sol#453)
+	Event emitted after the call(s):
+	- QuoteReturnedToLP(quoteBal) (contracts/PoolHedger.sol#456)
+		- sendAllQuoteToLP() (contracts/PoolHedger.sol#252)
+	- ShortSetTo(shortBalance,shortBalance,startCollateral,newCollateral) (contracts/PoolHedger.sol#253)
+Reentrancy in PoolHedger.updatePosition(SynthetixAdapter.ExchangeParams,uint256,uint256,uint256,int256) (contracts/PoolHedger.sol#293-327):
+	External calls:
+	- setShortTo(exchangeParams,0,shortBalance,collateral) (contracts/PoolHedger.sol#305)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+		- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	- int256(increaseLong(exchangeParams,expectedLong - longBalance,longBalance)) (contracts/PoolHedger.sol#310)
+		- receivedQuote = liquidityPool.transferQuoteToHedge(exchangeParams,purchaseAmount) (contracts/PoolHedger.sol#342)
+		- synthetixAdapter.exchangeFromExactQuote(address(optionMarket),purchaseAmount) (contracts/PoolHedger.sol#349)
+	Event emitted after the call(s):
+	- LongSetTo(currentBalance,newBalance) (contracts/PoolHedger.sol#351)
+		- int256(increaseLong(exchangeParams,expectedLong - longBalance,longBalance)) (contracts/PoolHedger.sol#310)
+Reentrancy in PoolHedger.updatePosition(SynthetixAdapter.ExchangeParams,uint256,uint256,uint256,int256) (contracts/PoolHedger.sol#293-327):
+	External calls:
+	- setShortTo(exchangeParams,0,shortBalance,collateral) (contracts/PoolHedger.sol#305)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+		- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	- int256(decreaseLong(longBalance - expectedLong,longBalance)) (contracts/PoolHedger.sol#313)
+		- synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+	Event emitted after the call(s):
+	- LongSetTo(currentBalance,newBalance) (contracts/PoolHedger.sol#363)
+		- int256(decreaseLong(longBalance - expectedLong,longBalance)) (contracts/PoolHedger.sol#313)
+Reentrancy in PoolHedger.updatePosition(SynthetixAdapter.ExchangeParams,uint256,uint256,uint256,int256) (contracts/PoolHedger.sol#293-327):
+	External calls:
+	- decreaseLong(longBalance,longBalance) (contracts/PoolHedger.sol#323)
+		- synthetixAdapter.exchangeFromExactBase(address(optionMarket),amount) (contracts/PoolHedger.sol#361)
+	- - int256(setShortTo(exchangeParams,expectedShort,shortBalance,collateral)) (contracts/PoolHedger.sol#325)
+		- received = liquidityPool.transferQuoteToHedge(exchangeParams,desiredCollateral - startCollateral) (contracts/PoolHedger.sol#415)
+		- (None,newCollateral) = exchangeParams.short.deposit(address(this),shortId,received) (contracts/PoolHedger.sol#417)
+		- (newShort,None) = exchangeParams.short.draw(shortId,maxPossibleShort - startShort) (contracts/PoolHedger.sol#390)
+		- (None,newCollateral) = exchangeParams.short.withdraw(shortId,startCollateral - desiredCollateral) (contracts/PoolHedger.sol#422)
+		- exchangeParams.short.repayWithCollateral(shortId,startShort - desiredShort) (contracts/PoolHedger.sol#395)
+	Event emitted after the call(s):
+	- ShortSetTo(startShort,newShort,startCollateral,newCollateral) (contracts/PoolHedger.sol#401)
+		- - int256(setShortTo(exchangeParams,expectedShort,shortBalance,collateral)) (contracts/PoolHedger.sol#325)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+
+LiquidityPool._canProcess(uint256,uint256,bool,uint256) (contracts/LiquidityPool.sol#377-393) uses timestamp for comparisons
+	Dangerous comparisons:
+	- guardianBypass = msg.sender == lpParams.guardianMultisig && initiatedTime + lpParams.guardianDelay < block.timestamp (contracts/LiquidityPool.sol#385-386)
+	- delaysExpired = initiatedTime + minimumDelay < block.timestamp && CBTimestamp < block.timestamp (contracts/LiquidityPool.sol#388)
+	- validEntry && ((! isStale && delaysExpired) || guardianBypass) (contracts/LiquidityPool.sol#392)
+LiquidityPool._updateCBs(LiquidityPool.Liquidity,uint256,uint256,int256) (contracts/LiquidityPool.sol#465-506) uses timestamp for comparisons
+	Dangerous comparisons:
+	- timeToAdd > 0 && CBTimestamp < block.timestamp + timeToAdd (contracts/LiquidityPool.sol#497)
+LiquidityPool.boardSettlement(uint256,uint256,uint256,uint256) (contracts/LiquidityPool.sol#602-626) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp + lpParams.boardSettlementCBTimeout > CBTimestamp (contracts/LiquidityPool.sol#610)
+OptionGreekCache.getPriceForForceClose(OptionMarket.TradeParameters,OptionMarket.Strike,uint256,uint256,bool) (contracts/OptionGreekCache.sol#539-611) uses timestamp for comparisons
+	Dangerous comparisons:
+	- price > minPrice (contracts/OptionGreekCache.sol#607)
+OptionGreekCache.getShockVol(uint256) (contracts/OptionGreekCache.sol#672-685) uses timestamp for comparisons
+	Dangerous comparisons:
+	- timeToMaturity <= minCollatParams.shockVolPointA (contracts/OptionGreekCache.sol#673)
+	- timeToMaturity >= minCollatParams.shockVolPointB (contracts/OptionGreekCache.sol#676)
+OptionGreekCache._updateMaxIvVariance() (contracts/OptionGreekCache.sol#880-888) uses timestamp for comparisons
+	Dangerous comparisons:
+	- boardCaches[liveBoards[i]].ivVariance > maxIvVariance (contracts/OptionGreekCache.sol#883)
+OptionGreekCache._updateMaxSkewVariance(OptionGreekCache.OptionBoardCache) (contracts/OptionGreekCache.sol#914-932) uses timestamp for comparisons
+	Dangerous comparisons:
+	- boardCaches[liveBoards[i_scope_0]].maxSkewVariance > maxSkewVariance (contracts/OptionGreekCache.sol#927)
+OptionGreekCache.isGlobalCacheStale(uint256) (contracts/OptionGreekCache.sol#938-946) uses timestamp for comparisons
+	Dangerous comparisons:
+	- (_isUpdatedAtTimeStale(globalCache.minUpdatedAt) || ! _isPriceMoveAcceptable(globalCache.minUpdatedAtPrice,spotPrice) || ! _isPriceMoveAcceptable(globalCache.maxUpdatedAtPrice,spotPrice)) (contracts/OptionGreekCache.sol#942-944)
+OptionGreekCache.isBoardCacheStale(uint256) (contracts/OptionGreekCache.sol#948-956) uses timestamp for comparisons
+	Dangerous comparisons:
+	- boardCache.id == 0 (contracts/OptionGreekCache.sol#951)
+	- (_isUpdatedAtTimeStale(boardCache.updatedAt) || ! _isPriceMoveAcceptable(boardCache.updatedAtPrice,spotPrice)) (contracts/OptionGreekCache.sol#954-955)
+OptionGreekCache._isPriceMoveAcceptable(uint256,uint256) (contracts/OptionGreekCache.sol#964-971) uses timestamp for comparisons
+	Dangerous comparisons:
+	- currentPrice > pastPrice (contracts/OptionGreekCache.sol#966)
+	- (currentPrice - pastPrice) < acceptablePriceMovement (contracts/OptionGreekCache.sol#967)
+	- (pastPrice - currentPrice) < acceptablePriceMovement (contracts/OptionGreekCache.sol#969)
+OptionGreekCache._isUpdatedAtTimeStale(uint256) (contracts/OptionGreekCache.sol#978-981) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _getSecondsTo(updatedAt,block.timestamp) > greekCacheParams.staleUpdateDuration (contracts/OptionGreekCache.sol#980)
+OptionGreekCache.getBoardGreeksView(uint256) (contracts/OptionGreekCache.sol#998-1016) uses timestamp for comparisons
+	Dangerous comparisons:
+	- i < boardCaches[boardId].strikes.length (contracts/OptionGreekCache.sol#1002)
+OptionGreekCache._getSecondsTo(uint256,uint256) (contracts/OptionGreekCache.sol#1075-1080) uses timestamp for comparisons
+	Dangerous comparisons:
+	- toTime > fromTime (contracts/OptionGreekCache.sol#1076)
+OptionGreekCache._min(uint256,uint256) (contracts/OptionGreekCache.sol#1082-1084) uses timestamp for comparisons
+	Dangerous comparisons:
+	- (x < y) (contracts/OptionGreekCache.sol#1083)
+OptionGreekCache._max(uint256,uint256) (contracts/OptionGreekCache.sol#1086-1088) uses timestamp for comparisons
+	Dangerous comparisons:
+	- (x > y) (contracts/OptionGreekCache.sol#1087)
+OptionMarket.createOptionBoard(uint256,uint256,uint256[],uint256[],bool) (contracts/OptionMarket.sol#203-242) uses timestamp for comparisons
+	Dangerous comparisons:
+	- expiry <= block.timestamp || expiry > block.timestamp + optionMarketParams.maxBoardExpiry (contracts/OptionMarket.sol#215)
+OptionMarket._doTrade(OptionMarket.Strike,OptionMarket.OptionBoard,OptionMarket.TradeParameters,uint256,uint256) (contracts/OptionMarket.sol#667-723) uses timestamp for comparisons
+	Dangerous comparisons:
+	- board.expiry < block.timestamp (contracts/OptionMarket.sol#693)
+OptionMarket.settleExpiredBoard(uint256) (contracts/OptionMarket.sol#915-924) uses timestamp for comparisons
+	Dangerous comparisons:
+	- board.expiry > block.timestamp (contracts/OptionMarket.sol#920)
+OptionMarketPricer.updateCacheAndGetTradeResult(OptionMarket.Strike,OptionMarket.TradeParameters,uint256,uint256) (contracts/OptionMarketPricer.sol#244-353) uses timestamp for comparisons
+	Dangerous comparisons:
+	- isPostCutoff = block.timestamp + tradeLimitParams.tradingCutoff > boardExpiry (contracts/OptionMarketPricer.sol#252)
+	- trade.tradeDirection != TradeDirection.LIQUIDATE && ! isPostCutoff (contracts/OptionMarketPricer.sol#324)
+	- pricing.callDelta > tradeLimitParams.minForceCloseDelta && pricing.callDelta < (int256(DecimalMath.UNIT) - tradeLimitParams.minForceCloseDelta) (contracts/OptionMarketPricer.sol#327-328)
+	- pricing.callDelta < tradeLimitParams.minDelta || pricing.callDelta > int256(DecimalMath.UNIT) - tradeLimitParams.minDelta (contracts/OptionMarketPricer.sol#340-341)
+OptionMarketPricer.getTradeResult(OptionMarket.TradeParameters,OptionGreekCache.TradePricing,uint256,uint256) (contracts/OptionMarketPricer.sol#387-451) uses timestamp for comparisons
+	Dangerous comparisons:
+	- totalFee > premium (contracts/OptionMarketPricer.sol#429)
+OptionMarketPricer.getTimeWeightedFee(uint256,uint256,uint256,uint256) (contracts/OptionMarketPricer.sol#470-482) uses timestamp for comparisons
+	Dangerous comparisons:
+	- timeToExpiry <= pointA (contracts/OptionMarketPricer.sol#477)
+OptionMarketPricer.getVegaUtilFee(OptionMarket.TradeParameters,OptionGreekCache.TradePricing) (contracts/OptionMarketPricer.sol#491-525) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _abs(pricing.preTradeAmmNetStdVega) >= _abs(pricing.postTradeAmmNetStdVega) (contracts/OptionMarketPricer.sol#496)
+OptionMarketPricer._abs(int256) (contracts/OptionMarketPricer.sol#610-612) uses timestamp for comparisons
+	Dangerous comparisons:
+	- val > 0 (contracts/OptionMarketPricer.sol#611)
+PoolHedger.hedgeDelta() (contracts/PoolHedger.sol#223-240) uses timestamp for comparisons
+	Dangerous comparisons:
+	- lastInteraction + poolHedgerParams.interactionDelay > block.timestamp (contracts/PoolHedger.sol#229)
+GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256) (contracts/lib/GWAV.sol#113-126) uses timestamp for comparisons
+	Dangerous comparisons:
+	- t0 == t1 (contracts/lib/GWAV.sol#121)
+GWAV._queryFirstBefore(GWAV.Params,uint256) (contracts/lib/GWAV.sol#190-208) uses timestamp for comparisons
+	Dangerous comparisons:
+	- beforeOrAt.blockTimestamp <= target (contracts/lib/GWAV.sol#193)
+	- beforeOrAt.blockTimestamp > target (contracts/lib/GWAV.sol#202)
+GWAV._binarySearch(GWAV.Params,uint256) (contracts/lib/GWAV.sol#218-237) uses timestamp for comparisons
+	Dangerous comparisons:
+	- targetAtOrAfter = beforeOrAt.blockTimestamp <= target (contracts/lib/GWAV.sol#229)
+	- targetAtOrAfter && target <= atOrAfter.blockTimestamp (contracts/lib/GWAV.sol#232)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Void constructor called in OptionToken.constructor(string,string) (contracts/OptionToken.sol#114):
+	- ERC721Enumerable() (contracts/OptionToken.sol#114)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#void-constructor
+
+FixedPointMathLib.ln(int256) (contracts/lib/FixedPointMathLib.sol#19-77) uses assembly
+	- INLINE ASM (contracts/lib/FixedPointMathLib.sol#56-61)
+FixedPointMathLib.ilog2(uint256) (contracts/lib/FixedPointMathLib.sol#83-94) uses assembly
+	- INLINE ASM (contracts/lib/FixedPointMathLib.sol#84-93)
+FixedPointMathLib.exp(int256) (contracts/lib/FixedPointMathLib.sol#97-152) uses assembly
+	- INLINE ASM (contracts/lib/FixedPointMathLib.sol#137-142)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+
+LiquidityPool.processDepositQueue(uint256) (contracts/LiquidityPool.sol#295-322) has costly operations inside a loop:
+	- totalQueuedDeposits -= current.amountLiquidity (contracts/LiquidityPool.sol#307)
+LiquidityPool.processDepositQueue(uint256) (contracts/LiquidityPool.sol#295-322) has costly operations inside a loop:
+	- queuedDepositHead ++ (contracts/LiquidityPool.sol#320)
+LiquidityPool._updateCBs(LiquidityPool.Liquidity,uint256,uint256,int256) (contracts/LiquidityPool.sol#465-506) has costly operations inside a loop:
+	- CBTimestamp = block.timestamp + timeToAdd (contracts/LiquidityPool.sol#498)
+LiquidityPool.processWithdrawalQueue(uint256) (contracts/LiquidityPool.sol#325-375) has costly operations inside a loop:
+	- totalQueuedWithdrawals -= burnAmount (contracts/LiquidityPool.sol#345)
+LiquidityPool.processWithdrawalQueue(uint256) (contracts/LiquidityPool.sol#325-375) has costly operations inside a loop:
+	- queuedWithdrawalHead ++ (contracts/LiquidityPool.sol#373)
+OptionGreekCache.removeBoard(uint256) (contracts/OptionGreekCache.sol#340-362) has costly operations inside a loop:
+	- delete strikeCaches[boardCache.strikes[i]] (contracts/OptionGreekCache.sol#350)
+OptionGreekCache.removeBoard(uint256) (contracts/OptionGreekCache.sol#340-362) has costly operations inside a loop:
+	- liveBoards.pop() (contracts/OptionGreekCache.sol#355)
+OptionMarket._addStrikeToBoard(OptionMarket.OptionBoard,uint256,uint256) (contracts/OptionMarket.sol#325-342) has costly operations inside a loop:
+	- strikeId = nextStrikeId ++ (contracts/OptionMarket.sol#337)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#costly-operations-inside-a-loop
+
+SignedDecimalMath.divideDecimal(int256,int256) (contracts/synthetix/SignedDecimalMath.sol#140-143) is never used and should be removed
+SignedDecimalMath.multiplyDecimalRound(int256,int256) (contracts/synthetix/SignedDecimalMath.sol#127-129) is never used and should be removed
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dead-code
+
+Pragma version0.8.9 (contracts/LiquidityPool.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/LiquidityTokens.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/OptionGreekCache.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/OptionMarket.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/OptionMarketPricer.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/OptionToken.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/PoolHedger.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/ShortCollateral.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/SynthetixAdapter.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/lib/BlackScholes.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/lib/FixedPointMathLib.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/lib/GWAV.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version0.8.9 (contracts/lib/SimpleInitializeable.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version^0.8.9 (contracts/synthetix/AbstractOwned.sol#23) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version^0.8.9 (contracts/synthetix/DecimalMath.sol#23) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version^0.8.9 (contracts/synthetix/Owned.sol#23) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version^0.8.9 (contracts/synthetix/OwnedUpgradeable.sol#6) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+Pragma version^0.8.9 (contracts/synthetix/SignedDecimalMath.sol#23) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
+solc-0.8.9 is not recommended for deployment
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._synthetixAdapter (contracts/LiquidityPool.sol#160) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._optionMarket (contracts/LiquidityPool.sol#161) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._liquidityTokens (contracts/LiquidityPool.sol#162) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._greekCache (contracts/LiquidityPool.sol#163) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._poolHedger (contracts/LiquidityPool.sol#164) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._shortCollateral (contracts/LiquidityPool.sol#165) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._quoteAsset (contracts/LiquidityPool.sol#166) is not in mixedCase
+Parameter LiquidityPool.init(SynthetixAdapter,OptionMarket,LiquidityTokens,OptionGreekCache,PoolHedger,ShortCollateral,ERC20,ERC20)._baseAsset (contracts/LiquidityPool.sol#167) is not in mixedCase
+Parameter LiquidityPool.setLiquidityPoolParameters(LiquidityPool.LiquidityPoolParameters)._lpParams (contracts/LiquidityPool.sol#184) is not in mixedCase
+Variable LiquidityPool.CBTimestamp (contracts/LiquidityPool.sol#137) is not in mixedCase
+Parameter LiquidityTokens.init(address)._liquidityPool (contracts/LiquidityTokens.sol#42) is not in mixedCase
+Parameter LiquidityTokens.setLiquidityTracker(ILiquidityTracker)._liquidityTracker (contracts/LiquidityTokens.sol#50) is not in mixedCase
+Parameter OptionGreekCache.init(SynthetixAdapter,OptionMarket,address)._synthetixAdapter (contracts/OptionGreekCache.sol#222) is not in mixedCase
+Parameter OptionGreekCache.init(SynthetixAdapter,OptionMarket,address)._optionMarket (contracts/OptionGreekCache.sol#223) is not in mixedCase
+Parameter OptionGreekCache.init(SynthetixAdapter,OptionMarket,address)._optionMarketPricer (contracts/OptionGreekCache.sol#224) is not in mixedCase
+Parameter OptionGreekCache.setGreekCacheParameters(OptionGreekCache.GreekCacheParameters)._greekCacheParams (contracts/OptionGreekCache.sol#235) is not in mixedCase
+Parameter OptionGreekCache.setForceCloseParameters(OptionGreekCache.ForceCloseParameters)._forceCloseParams (contracts/OptionGreekCache.sol#260) is not in mixedCase
+Parameter OptionGreekCache.setMinCollateralParameters(OptionGreekCache.MinCollateralParameters)._minCollatParams (contracts/OptionGreekCache.sol#284) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._synthetixAdapter (contracts/OptionMarket.sol#171) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._liquidityPool (contracts/OptionMarket.sol#172) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._optionPricer (contracts/OptionMarket.sol#173) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._greekCache (contracts/OptionMarket.sol#174) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._shortCollateral (contracts/OptionMarket.sol#175) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._optionToken (contracts/OptionMarket.sol#176) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._quoteAsset (contracts/OptionMarket.sol#177) is not in mixedCase
+Parameter OptionMarket.init(SynthetixAdapter,LiquidityPool,OptionMarketPricer,OptionGreekCache,ShortCollateral,OptionToken,IERC20,IERC20)._baseAsset (contracts/OptionMarket.sol#178) is not in mixedCase
+Parameter OptionMarket.setOptionMarketParams(OptionMarket.OptionMarketParameters)._optionMarketParams (contracts/OptionMarket.sol#355) is not in mixedCase
+Parameter OptionMarketPricer.init(address,OptionGreekCache)._optionMarket (contracts/OptionMarketPricer.sol#160) is not in mixedCase
+Parameter OptionMarketPricer.init(address,OptionGreekCache)._greekCache (contracts/OptionMarketPricer.sol#160) is not in mixedCase
+Parameter OptionMarketPricer.setPricingParams(OptionMarketPricer.PricingParameters)._pricingParams (contracts/OptionMarketPricer.sol#174) is not in mixedCase
+Parameter OptionMarketPricer.setTradeLimitParams(OptionMarketPricer.TradeLimitParameters)._tradeLimitParams (contracts/OptionMarketPricer.sol#198) is not in mixedCase
+Parameter OptionMarketPricer.setVarianceFeeParams(OptionMarketPricer.VarianceFeeParameters)._varianceFeeParams (contracts/OptionMarketPricer.sol#227) is not in mixedCase
+Parameter OptionToken.init(OptionMarket,OptionGreekCache,address,SynthetixAdapter)._optionMarket (contracts/OptionToken.sol#121) is not in mixedCase
+Parameter OptionToken.init(OptionMarket,OptionGreekCache,address,SynthetixAdapter)._greekCache (contracts/OptionToken.sol#122) is not in mixedCase
+Parameter OptionToken.init(OptionMarket,OptionGreekCache,address,SynthetixAdapter)._shortCollateral (contracts/OptionToken.sol#123) is not in mixedCase
+Parameter OptionToken.init(OptionMarket,OptionGreekCache,address,SynthetixAdapter)._synthetixAdapter (contracts/OptionToken.sol#124) is not in mixedCase
+Parameter OptionToken.setPartialCollateralParams(OptionToken.PartialCollateralParameters)._partialCollatParams (contracts/OptionToken.sol#135) is not in mixedCase
+Parameter OptionToken.adjustPosition(OptionMarket.TradeParameters,uint256,address,uint256,uint256,uint256,bool)._positionId (contracts/OptionToken.sol#165) is not in mixedCase
+Parameter PoolHedger.init(SynthetixAdapter,OptionMarket,OptionGreekCache,LiquidityPool,ERC20,ERC20)._synthetixAdapter (contracts/PoolHedger.sol#69) is not in mixedCase
+Parameter PoolHedger.init(SynthetixAdapter,OptionMarket,OptionGreekCache,LiquidityPool,ERC20,ERC20)._optionMarket (contracts/PoolHedger.sol#70) is not in mixedCase
+Parameter PoolHedger.init(SynthetixAdapter,OptionMarket,OptionGreekCache,LiquidityPool,ERC20,ERC20)._optionGreekCache (contracts/PoolHedger.sol#71) is not in mixedCase
+Parameter PoolHedger.init(SynthetixAdapter,OptionMarket,OptionGreekCache,LiquidityPool,ERC20,ERC20)._liquidityPool (contracts/PoolHedger.sol#72) is not in mixedCase
+Parameter PoolHedger.init(SynthetixAdapter,OptionMarket,OptionGreekCache,LiquidityPool,ERC20,ERC20)._quoteAsset (contracts/PoolHedger.sol#73) is not in mixedCase
+Parameter PoolHedger.init(SynthetixAdapter,OptionMarket,OptionGreekCache,LiquidityPool,ERC20,ERC20)._baseAsset (contracts/PoolHedger.sol#74) is not in mixedCase
+Parameter PoolHedger.setPoolHedgerParams(PoolHedger.PoolHedgerParameters)._poolHedgerParams (contracts/PoolHedger.sol#93) is not in mixedCase
+Parameter ShortCollateral.init(OptionMarket,LiquidityPool,OptionToken,SynthetixAdapter,ERC20,ERC20)._optionMarket (contracts/ShortCollateral.sol#48) is not in mixedCase
+Parameter ShortCollateral.init(OptionMarket,LiquidityPool,OptionToken,SynthetixAdapter,ERC20,ERC20)._liquidityPool (contracts/ShortCollateral.sol#49) is not in mixedCase
+Parameter ShortCollateral.init(OptionMarket,LiquidityPool,OptionToken,SynthetixAdapter,ERC20,ERC20)._optionToken (contracts/ShortCollateral.sol#50) is not in mixedCase
+Parameter ShortCollateral.init(OptionMarket,LiquidityPool,OptionToken,SynthetixAdapter,ERC20,ERC20)._synthetixAdapter (contracts/ShortCollateral.sol#51) is not in mixedCase
+Parameter ShortCollateral.init(OptionMarket,LiquidityPool,OptionToken,SynthetixAdapter,ERC20,ERC20)._quoteAsset (contracts/ShortCollateral.sol#52) is not in mixedCase
+Parameter ShortCollateral.init(OptionMarket,LiquidityPool,OptionToken,SynthetixAdapter,ERC20,ERC20)._baseAsset (contracts/ShortCollateral.sol#53) is not in mixedCase
+Variable ShortCollateral.LPBaseExcess (contracts/ShortCollateral.sol#35) is not in mixedCase
+Variable ShortCollateral.LPQuoteExcess (contracts/ShortCollateral.sol#36) is not in mixedCase
+Parameter SynthetixAdapter.setAddressResolver(IAddressResolver)._addressResolver (contracts/SynthetixAdapter.sol#80) is not in mixedCase
+Parameter SynthetixAdapter.setGlobalsForContract(address,bytes32,bytes32,address,bytes32)._contractAddress (contracts/SynthetixAdapter.sol#94) is not in mixedCase
+Parameter SynthetixAdapter.setGlobalsForContract(address,bytes32,bytes32,address,bytes32)._quoteKey (contracts/SynthetixAdapter.sol#95) is not in mixedCase
+Parameter SynthetixAdapter.setGlobalsForContract(address,bytes32,bytes32,address,bytes32)._baseKey (contracts/SynthetixAdapter.sol#96) is not in mixedCase
+Parameter SynthetixAdapter.setGlobalsForContract(address,bytes32,bytes32,address,bytes32)._rewardAddress (contracts/SynthetixAdapter.sol#97) is not in mixedCase
+Parameter SynthetixAdapter.setGlobalsForContract(address,bytes32,bytes32,address,bytes32)._trackingCode (contracts/SynthetixAdapter.sol#98) is not in mixedCase
+Parameter SynthetixAdapter.setMarketPaused(address,bool)._contractAddress (contracts/SynthetixAdapter.sol#115) is not in mixedCase
+Parameter SynthetixAdapter.setMarketPaused(address,bool)._isPaused (contracts/SynthetixAdapter.sol#115) is not in mixedCase
+Parameter SynthetixAdapter.setGlobalPaused(bool)._isPaused (contracts/SynthetixAdapter.sol#120) is not in mixedCase
+Parameter SynthetixAdapter.getSpotPriceForMarket(address)._contractAddress (contracts/SynthetixAdapter.sol#150) is not in mixedCase
+Parameter SynthetixAdapter.getExchangeParams(address)._contractAddress (contracts/SynthetixAdapter.sol#174) is not in mixedCase
+Parameter AbstractOwned.nominateNewOwner(address)._owner (contracts/synthetix/AbstractOwned.sol#35) is not in mixedCase
+Constant DecimalMath.highPrecisionDecimals (contracts/synthetix/DecimalMath.sol#35) is not in UPPER_CASE_WITH_UNDERSCORES
+Function OwnedUpgradeable.__Ownable_init() (contracts/synthetix/OwnedUpgradeable.sol#18-20) is not in mixedCase
+Constant SignedDecimalMath.highPrecisionDecimals (contracts/synthetix/SignedDecimalMath.sol#35) is not in UPPER_CASE_WITH_UNDERSCORES
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+
+Variable OptionToken.adjustPosition(OptionMarket.TradeParameters,uint256,address,uint256,uint256,uint256,bool)._positionId (contracts/OptionToken.sol#165) is too similar to OptionToken.settlePositions(uint256[]).positionIds (contracts/OptionToken.sol#296)
+Variable OptionToken.adjustPosition(OptionMarket.TradeParameters,uint256,address,uint256,uint256,uint256,bool)._positionId (contracts/OptionToken.sol#165) is too similar to OptionToken.getPositionsWithOwner(uint256[]).positionIds (contracts/OptionToken.sol#583)
+Variable OptionToken.adjustPosition(OptionMarket.TradeParameters,uint256,address,uint256,uint256,uint256,bool)._positionId (contracts/OptionToken.sol#165) is too similar to OptionToken.getOptionPositions(uint256[]).positionIds (contracts/OptionToken.sol#571)
+Variable OptionToken.adjustPosition(OptionMarket.TradeParameters,uint256,address,uint256,uint256,uint256,bool)._positionId (contracts/OptionToken.sol#165) is too similar to OptionToken.merge(uint256[]).positionIds (contracts/OptionToken.sol#482)
+Variable ShortCollateral.settleOptions(uint256[]).insolventAmount_scope_0 (contracts/ShortCollateral.sol#200) is too similar to ShortCollateral.settleOptions(uint256[]).insolventAmount_scope_1 (contracts/ShortCollateral.sol#211)
+Variable BlackScholes.MAX_CDF_STD_DIST_INPUT (contracts/lib/BlackScholes.sol#51) is too similar to BlackScholes.MIN_CDF_STD_DIST_INPUT (contracts/lib/BlackScholes.sol#49)
+Variable GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256).secondsAgoA (contracts/lib/GWAV.sol#115) is too similar to GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256).secondsAgoB (contracts/lib/GWAV.sol#116)
+Variable GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256).secondsAgoA (contracts/lib/GWAV.sol#115) is too similar to GWAV.observe(GWAV.Params,uint256,uint256[]).secondsAgos (contracts/lib/GWAV.sol#136)
+Variable GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256).secondsAgoB (contracts/lib/GWAV.sol#116) is too similar to GWAV.observe(GWAV.Params,uint256,uint256[]).secondsAgos (contracts/lib/GWAV.sol#136)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#variable-names-are-too-similar
+
+GWAV.UNIT (contracts/lib/GWAV.sol#21) is never used in GWAV (contracts/lib/GWAV.sol#16-273)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-state-variable
+
+setPricingParams(OptionMarketPricer.PricingParameters) should be declared external:
+	- OptionMarketPricer.setPricingParams(OptionMarketPricer.PricingParameters) (contracts/OptionMarketPricer.sol#174-191)
+setTradeLimitParams(OptionMarketPricer.TradeLimitParameters) should be declared external:
+	- OptionMarketPricer.setTradeLimitParams(OptionMarketPricer.TradeLimitParameters) (contracts/OptionMarketPricer.sol#198-220)
+setVarianceFeeParams(OptionMarketPricer.VarianceFeeParameters) should be declared external:
+	- OptionMarketPricer.setVarianceFeeParams(OptionMarketPricer.VarianceFeeParameters) (contracts/OptionMarketPricer.sol#227-231)
+getSpotPriceForMarket(address) should be declared external:
+	- SynthetixAdapter.getSpotPriceForMarket(address) (contracts/SynthetixAdapter.sol#150-152)
+getExchangeParams(address) should be declared external:
+	- SynthetixAdapter.getExchangeParams(address) (contracts/SynthetixAdapter.sol#174-192)
+optionPrices(BlackScholes.BlackScholesInputs) should be declared external:
+	- BlackScholes.optionPrices(BlackScholes.BlackScholesInputs) (contracts/lib/BlackScholes.sol#64-78)
+pricesDeltaStdVega(BlackScholes.BlackScholesInputs) should be declared external:
+	- BlackScholes.pricesDeltaStdVega(BlackScholes.BlackScholesInputs) (contracts/lib/BlackScholes.sol#83-114)
+delta(BlackScholes.BlackScholesInputs) should be declared external:
+	- BlackScholes.delta(BlackScholes.BlackScholesInputs) (contracts/lib/BlackScholes.sol#120-134)
+vega(BlackScholes.BlackScholesInputs) should be declared external:
+	- BlackScholes.vega(BlackScholes.BlackScholesInputs) (contracts/lib/BlackScholes.sol#139-151)
+getGWAVForPeriod(GWAV.Params,uint256,uint256) should be declared external:
+	- GWAV.getGWAVForPeriod(GWAV.Params,uint256,uint256) (contracts/lib/GWAV.sol#113-126)
+observe(GWAV.Params,uint256,uint256[]) should be declared external:
+	- GWAV.observe(GWAV.Params,uint256,uint256[]) (contracts/lib/GWAV.sol#133-143)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external

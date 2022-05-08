@@ -257,7 +257,7 @@ contract OptionMarketPricer is Owned, SimpleInitializeable {
 
       // If it is a force close and skew ends up outside the "abs min/max" thresholds
       if (
-        trade.tradeDirection != OptionMarket.TradeDirection.LIQUIDATE &&
+        trade.tradeDirection != TradeDirection.LIQUIDATE &&
         (newSkew <= tradeLimitParams.absMinSkew || newSkew >= tradeLimitParams.absMaxSkew)
       ) {
         revert ForceCloseSkewOutOfRange(
@@ -321,7 +321,7 @@ contract OptionMarketPricer is Owned, SimpleInitializeable {
 
     if (trade.isForceClose) {
       // ignore delta cutoffs post trading cutoff, and for liquidations
-      if (trade.tradeDirection != OptionMarket.TradeDirection.LIQUIDATE && !isPostCutoff) {
+      if (trade.tradeDirection != TradeDirection.LIQUIDATE && !isPostCutoff) {
         // delta must fall BELOW the min or ABOVE the max to allow for force closes
         if (
           pricing.callDelta > tradeLimitParams.minForceCloseDelta &&

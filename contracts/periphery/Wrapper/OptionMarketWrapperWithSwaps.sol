@@ -37,7 +37,7 @@ contract OptionMarketWrapperWithSwaps is Ownable {
     uint iterations;
     uint setCollateralTo;
     uint currentCollateral;
-    OptionMarket.OptionType optionType; // Is the trade a long/short & call/put?
+    OptionType optionType; // Is the trade a long/short & call/put?
     uint amount; // The amount the user has requested to close
     uint minCost; // Min amount for the cost of the trade
     uint maxCost; // Max amount for the cost of the trade
@@ -219,11 +219,11 @@ contract OptionMarketWrapperWithSwaps is Ownable {
     OptionToken.PositionWithOwner memory currentPosition = c.optionToken.getPositionWithOwner(positionId);
 
     if (setCollateralTo > currentPosition.collateral) {
-      if (currentPosition.optionType == OptionMarket.OptionType.SHORT_CALL_BASE) {
+      if (currentPosition.optionType == OptionType.SHORT_CALL_BASE) {
         _transferAsset(c.baseAsset, msg.sender, address(this), setCollateralTo);
       } else if (
-        currentPosition.optionType == OptionMarket.OptionType.SHORT_CALL_QUOTE ||
-        currentPosition.optionType == OptionMarket.OptionType.SHORT_PUT_QUOTE
+        currentPosition.optionType == OptionType.SHORT_CALL_QUOTE ||
+        currentPosition.optionType == OptionType.SHORT_PUT_QUOTE
       ) {
         _transferAsset(c.quoteAsset, msg.sender, address(this), setCollateralTo);
       }
@@ -275,7 +275,7 @@ contract OptionMarketWrapperWithSwaps is Ownable {
 
     _transferBaseCollateral(params.optionType, params.currentCollateral, params.setCollateralTo, c.baseAsset);
 
-    if (params.optionType != OptionMarket.OptionType.SHORT_CALL_BASE) {
+    if (params.optionType != OptionType.SHORT_CALL_BASE) {
       // You want to take outstanding collateral - minCost from user (should be inputAmount)
       _transferAsset(params.inputAsset, msg.sender, address(this), params.inputAmount);
 
@@ -342,7 +342,7 @@ contract OptionMarketWrapperWithSwaps is Ownable {
 
       if (useOtherStable) {
         uint expected = params.maxCost;
-        if (params.optionType != OptionMarket.OptionType.SHORT_CALL_BASE) {
+        if (params.optionType != OptionType.SHORT_CALL_BASE) {
           uint collateralBalanceAfterTrade = params.maxCost > params.currentCollateral
             ? 0
             : params.currentCollateral - params.maxCost;
@@ -486,17 +486,17 @@ contract OptionMarketWrapperWithSwaps is Ownable {
       _transferAsset(baseAsset, msg.sender, address(this), baseBalance);
     }
 
-    if (token.getPositionState(positionId) == OptionToken.PositionState.ACTIVE) {
+    if (token.getPositionState(positionId) == PositionState.ACTIVE) {
       token.transferFrom(address(this), msg.sender, positionId);
     }
   }
 
-  function _isLong(OptionMarket.OptionType optionType) internal pure returns (bool) {
-    return (optionType < OptionMarket.OptionType.SHORT_CALL_BASE);
+  function _isLong(OptionType optionType) internal pure returns (bool) {
+    return (optionType < OptionType.SHORT_CALL_BASE);
   }
 
-  function _isBaseCollateral(OptionMarket.OptionType optionType) internal pure returns (bool) {
-    return (optionType == OptionMarket.OptionType.SHORT_CALL_BASE);
+  function _isBaseCollateral(OptionType optionType) internal pure returns (bool) {
+    return (optionType == OptionType.SHORT_CALL_BASE);
   }
 
   /**
@@ -532,12 +532,12 @@ contract OptionMarketWrapperWithSwaps is Ownable {
   }
 
   function _transferBaseCollateral(
-    OptionMarket.OptionType optionType,
+    OptionType optionType,
     uint currentCollateral,
     uint setCollateralTo,
     ERC20 baseAsset
   ) internal {
-    if (optionType == OptionMarket.OptionType.SHORT_CALL_BASE && setCollateralTo > currentCollateral) {
+    if (optionType == OptionType.SHORT_CALL_BASE && setCollateralTo > currentCollateral) {
       _transferAsset(baseAsset, msg.sender, address(this), setCollateralTo - currentCollateral);
     }
   }

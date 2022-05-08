@@ -16,14 +16,6 @@ import "./OptionMarket.sol";
 import "./SynthetixAdapter.sol";
 import "./OptionGreekCache.sol";
 
-/**
- * @title OptionToken
- * @author Lyra
- * @dev Provides a tokenized representation of each trade position including amount of options and collateral.
- */
-contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enumerable {
-  using DecimalMath for uint;
-
   enum PositionState {
     EMPTY,
     ACTIVE,
@@ -46,10 +38,18 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
     TRANSFER
   }
 
+/**
+ * @title OptionToken
+ * @author Lyra
+ * @dev Provides a tokenized representation of each trade position including amount of options and collateral.
+ */
+contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enumerable {
+  using DecimalMath for uint;
+
   struct OptionPosition {
     uint positionId;
     uint strikeId;
-    OptionMarket.OptionType optionType;
+    OptionType optionType;
     uint amount;
     uint collateral;
     PositionState state;
@@ -76,7 +76,7 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
   struct PositionWithOwner {
     uint positionId;
     uint strikeId;
-    OptionMarket.OptionType optionType;
+    OptionType optionType;
     uint amount;
     uint collateral;
     PositionState state;
@@ -220,8 +220,8 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
       // return all collateral to the user if they fully close the position
       pendingCollateral = -(SafeCast.toInt256(position.collateral));
       if (
-        trade.optionType == OptionMarket.OptionType.SHORT_CALL_QUOTE ||
-        trade.optionType == OptionMarket.OptionType.SHORT_PUT_QUOTE
+        trade.optionType == OptionType.SHORT_CALL_QUOTE ||
+        trade.optionType == OptionType.SHORT_PUT_QUOTE
       ) {
         // Add the optionCost to the inverted collateral (subtract from collateral)
         pendingCollateral += SafeCast.toInt256(optionCost);
@@ -235,7 +235,7 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
 
     if (_isShort(trade.optionType)) {
       uint preCollateral = position.collateral;
-      if (trade.optionType != OptionMarket.OptionType.SHORT_CALL_BASE) {
+      if (trade.optionType != OptionType.SHORT_CALL_BASE) {
         if (isOpen) {
           preCollateral += optionCost;
         } else {
@@ -265,7 +265,7 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
   function addCollateral(uint positionId, uint amountCollateral)
     external
     onlyOptionMarket
-    returns (OptionMarket.OptionType optionType)
+    returns (OptionType optionType)
   {
     OptionPosition storage position = positions[positionId];
 
@@ -325,7 +325,7 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
 
     uint convertedMinLiquidationFee = partialCollatParams.minLiquidationFee;
     uint insolvencyMultiplier = DecimalMath.UNIT;
-    if (trade.optionType == OptionMarket.OptionType.SHORT_CALL_BASE) {
+    if (trade.optionType == OptionType.SHORT_CALL_BASE) {
       totalCost = synthetixAdapter.estimateExchangeToExactQuote(trade.exchangeParams, totalCost);
       convertedMinLiquidationFee = partialCollatParams.minLiquidationFee.divideDecimal(trade.exchangeParams.spotPrice);
       insolvencyMultiplier = trade.exchangeParams.spotPrice;
@@ -556,8 +556,8 @@ contract OptionToken is Owned, SimpleInitializeable, ReentrancyGuard, ERC721Enum
   // Util //
   //////////
 
-  function _isShort(OptionMarket.OptionType optionType) internal pure returns (bool shortPosition) {
-    shortPosition = (uint(optionType) >= uint(OptionMarket.OptionType.SHORT_CALL_BASE)) ? true : false;
+  function _isShort(OptionType optionType) internal pure returns (bool shortPosition) {
+    shortPosition = (uint(optionType) >= uint(OptionType.SHORT_CALL_BASE)) ? true : false;
   }
 
   function getPositionState(uint positionId) external view returns (PositionState) {

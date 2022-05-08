@@ -92,10 +92,10 @@ contract ShortCollateral is Owned, SimpleInitializeable, ReentrancyGuard {
   function routeLiquidationFunds(
     address trader,
     address liquidator,
-    OptionMarket.OptionType optionType,
+    OptionType optionType,
     OptionToken.LiquidationFees memory liquidationFees
   ) external onlyOptionMarket {
-    if (optionType == OptionMarket.OptionType.SHORT_CALL_BASE) {
+    if (optionType == OptionType.SHORT_CALL_BASE) {
       _sendBaseCollateral(trader, liquidationFees.returnCollateral);
       _sendBaseCollateral(liquidator, liquidationFees.liquidatorFee);
       _exchangeAndSendBaseCollateral(address(optionMarket), liquidationFees.smFee);
@@ -183,11 +183,11 @@ contract ShortCollateral is Owned, SimpleInitializeable, ReentrancyGuard {
         revert BoardMustBeSettled(address(this), position);
       }
 
-      if (position.optionType == OptionMarket.OptionType.LONG_CALL) {
+      if (position.optionType == OptionType.LONG_CALL) {
         settlementAmounts[i] = _sendLongCallProceeds(position.owner, position.amount, strikePrice, priceAtExpiry);
-      } else if (position.optionType == OptionMarket.OptionType.LONG_PUT) {
+      } else if (position.optionType == OptionType.LONG_PUT) {
         settlementAmounts[i] = _sendLongPutProceeds(position.owner, position.amount, strikePrice, priceAtExpiry);
-      } else if (position.optionType == OptionMarket.OptionType.SHORT_CALL_BASE) {
+      } else if (position.optionType == OptionType.SHORT_CALL_BASE) {
         uint insolventAmount;
         (settlementAmounts[i], insolventAmount) = _sendShortCallBaseProceeds(
           position.owner,
@@ -196,7 +196,7 @@ contract ShortCollateral is Owned, SimpleInitializeable, ReentrancyGuard {
           ammShortCallBaseProfitRatio
         );
         baseInsolventAmount += insolventAmount;
-      } else if (position.optionType == OptionMarket.OptionType.SHORT_CALL_QUOTE) {
+      } else if (position.optionType == OptionType.SHORT_CALL_QUOTE) {
         uint insolventAmount;
         (settlementAmounts[i], insolventAmount) = _sendShortCallQuoteProceeds(
           position.owner,
@@ -207,7 +207,7 @@ contract ShortCollateral is Owned, SimpleInitializeable, ReentrancyGuard {
         );
         quoteInsolventAmount += insolventAmount;
       } else {
-        // OptionMarket.OptionType.SHORT_PUT_QUOTE
+        // OptionType.SHORT_PUT_QUOTE
         uint insolventAmount;
         (settlementAmounts[i], insolventAmount) = _sendShortPutQuoteProceeds(
           position.owner,
@@ -412,7 +412,7 @@ contract ShortCollateral is Owned, SimpleInitializeable, ReentrancyGuard {
     address indexed optionOwner,
     uint strikePrice,
     uint priceAtExpiry,
-    OptionMarket.OptionType optionType,
+    OptionType optionType,
     uint amount
   );
 

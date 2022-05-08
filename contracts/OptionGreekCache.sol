@@ -514,8 +514,8 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
     globalCache.netGreeks.netDelta += netDeltaDiff;
     globalCache.netGreeks.netStdVega += netStdVegaDiff;
 
-    pricing.optionPrice = (trade.optionType != OptionMarket.OptionType.LONG_PUT &&
-      trade.optionType != OptionMarket.OptionType.SHORT_PUT_QUOTE)
+    pricing.optionPrice = (trade.optionType != OptionType.LONG_PUT &&
+      trade.optionType != OptionType.SHORT_PUT_QUOTE)
       ? pricesDeltaStdVega.callPrice
       : pricesDeltaStdVega.putPrice;
     // AMM's net positions are the inverse of the user's net position
@@ -558,7 +558,7 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
       forceCloseParams.skewGWAVPeriod
     );
 
-    if (trade.tradeDirection == OptionMarket.TradeDirection.CLOSE) {
+    if (trade.tradeDirection == TradeDirection.CLOSE) {
       // If the tradeDirection is a close, we know the user force closed.
       if (trade.isBuy) {
         // closing a short - maximise vol
@@ -590,8 +590,8 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
       })
       .pricesDeltaStdVega();
 
-    uint price = (trade.optionType == OptionMarket.OptionType.LONG_PUT ||
-      trade.optionType == OptionMarket.OptionType.SHORT_PUT_QUOTE)
+    uint price = (trade.optionType == OptionType.LONG_PUT ||
+      trade.optionType == OptionType.SHORT_PUT_QUOTE)
       ? pricesDeltaStdVega.putPrice
       : pricesDeltaStdVega.callPrice;
 
@@ -600,7 +600,7 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
       uint parity = _getParity(strike.strikePrice, trade.exchangeParams.spotPrice, trade.optionType);
       uint minPrice = parity +
         trade.exchangeParams.spotPrice.multiplyDecimal(
-          trade.tradeDirection == OptionMarket.TradeDirection.CLOSE
+          trade.tradeDirection == TradeDirection.CLOSE
             ? forceCloseParams.shortSpotMin
             : forceCloseParams.liquidateSpotMin
         );
@@ -622,7 +622,7 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
   }
 
   function getMinCollateral(
-    OptionMarket.OptionType optionType,
+    OptionType optionType,
     uint strikePrice,
     uint expiry,
     uint spotPrice,
@@ -633,7 +633,7 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
     }
 
     // If put, reduce spot by percentage. If call, increase.
-    uint shockPrice = (optionType == OptionMarket.OptionType.SHORT_PUT_QUOTE)
+    uint shockPrice = (optionType == OptionType.SHORT_PUT_QUOTE)
       ? spotPrice.multiplyDecimal(minCollatParams.putSpotPriceShock)
       : spotPrice.multiplyDecimal(minCollatParams.callSpotPriceShock);
 
@@ -652,16 +652,16 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
     uint fullCollat;
     uint volCollat;
     uint staticCollat = minCollatParams.minStaticQuoteCollateral;
-    if (optionType == OptionMarket.OptionType.SHORT_CALL_BASE) {
+    if (optionType == OptionType.SHORT_CALL_BASE) {
       // Can be more lenient to SHORT_CALL_BASE traders
       volCollat = callPrice.multiplyDecimal(amount).divideDecimal(shockPrice);
       fullCollat = amount;
       staticCollat = minCollatParams.minStaticBaseCollateral;
-    } else if (optionType == OptionMarket.OptionType.SHORT_CALL_QUOTE) {
+    } else if (optionType == OptionType.SHORT_CALL_QUOTE) {
       volCollat = callPrice.multiplyDecimal(amount);
       fullCollat = type(uint).max;
     } else {
-      // optionType == OptionMarket.OptionType.SHORT_PUT_QUOTE
+      // optionType == OptionType.SHORT_PUT_QUOTE
       volCollat = putPrice.multiplyDecimal(amount);
       fullCollat = amount.multiplyDecimal(strikePrice);
     }
@@ -1053,9 +1053,9 @@ contract OptionGreekCache is Owned, SimpleInitializeable, ReentrancyGuard {
   function _getParity(
     uint strikePrice,
     uint spot,
-    OptionMarket.OptionType optionType
+    OptionType optionType
   ) internal pure returns (uint parity) {
-    int diff = (optionType == OptionMarket.OptionType.LONG_PUT || optionType == OptionMarket.OptionType.SHORT_PUT_QUOTE)
+    int diff = (optionType == OptionType.LONG_PUT || optionType == OptionType.SHORT_PUT_QUOTE)
       ? int(strikePrice) - int(spot)
       : int(spot) - int(strikePrice);
 

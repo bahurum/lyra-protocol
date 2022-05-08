@@ -56,7 +56,7 @@ contract VaultAdapter is Ownable {
     uint collateral;
     PositionState state;
   }
-
+/**
   enum OptionType {
     LONG_CALL,
     LONG_PUT,
@@ -64,7 +64,7 @@ contract VaultAdapter is Ownable {
     SHORT_CALL_QUOTE,
     SHORT_PUT_QUOTE
   }
-
+ */
   enum PositionState {
     EMPTY,
     ACTIVE,
@@ -419,7 +419,7 @@ contract VaultAdapter is Ownable {
     uint amount
   ) internal view returns (uint) {
     return
-      greekCache.getMinCollateral(OptionMarket.OptionType(uint(optionType)), strikePrice, expiry, spotPrice, amount);
+      greekCache.getMinCollateral(OptionType(uint(optionType)), strikePrice, expiry, spotPrice, amount);
   }
 
   function getMinCollateralForPosition(uint positionId) internal view returns (uint) {
@@ -492,7 +492,7 @@ contract VaultAdapter is Ownable {
         strikeId: _params.strikeId,
         positionId: _params.positionId,
         iterations: _params.iterations,
-        optionType: OptionMarket.OptionType(uint(_params.optionType)),
+        optionType: OptionType(uint(_params.optionType)),
         amount: _params.amount,
         setCollateralTo: _params.setCollateralTo,
         minTotalCost: _params.minTotalCost,

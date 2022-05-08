@@ -62,7 +62,7 @@ contract BasicOptionMarketWrapper is Ownable {
 
     _returnExcessFunds(c);
 
-    if (c.optionToken.getPositionState(result.positionId) == OptionToken.PositionState.ACTIVE) {
+    if (c.optionToken.getPositionState(result.positionId) == PositionState.ACTIVE) {
       c.optionToken.transferFrom(address(this), msg.sender, params.positionId);
     }
   }
@@ -84,14 +84,14 @@ contract BasicOptionMarketWrapper is Ownable {
 
     _returnExcessFunds(c);
 
-    if (c.optionToken.getPositionState(result.positionId) == OptionToken.PositionState.ACTIVE) {
+    if (c.optionToken.getPositionState(result.positionId) == PositionState.ACTIVE) {
       c.optionToken.transferFrom(address(this), msg.sender, params.positionId);
     }
   }
 
   function _takeExtraCollateral(
     OptionMarketContracts memory c,
-    OptionMarket.OptionType optionType,
+    OptionType optionType,
     uint extraCollateral
   ) internal {
     if (!_isLong(optionType)) {
@@ -116,15 +116,15 @@ contract BasicOptionMarketWrapper is Ownable {
     }
   }
 
-  function _isLong(OptionMarket.OptionType optionType) internal pure returns (bool) {
-    return (optionType < OptionMarket.OptionType.SHORT_CALL_BASE);
+  function _isLong(OptionType optionType) internal pure returns (bool) {
+    return (optionType < OptionType.SHORT_CALL_BASE);
   }
 
-  function _isCall(OptionMarket.OptionType optionType) internal pure returns (bool) {
-    return (optionType != OptionMarket.OptionType.SHORT_PUT_QUOTE && optionType != OptionMarket.OptionType.LONG_PUT);
+  function _isCall(OptionType optionType) internal pure returns (bool) {
+    return (optionType != OptionType.SHORT_PUT_QUOTE && optionType != OptionType.LONG_PUT);
   }
 
-  function _isBaseCollateral(OptionMarket.OptionType optionType) internal pure returns (bool) {
-    return (optionType == OptionMarket.OptionType.SHORT_CALL_BASE);
+  function _isBaseCollateral(OptionType optionType) internal pure returns (bool) {
+    return (optionType == OptionType.SHORT_CALL_BASE);
   }
 }
